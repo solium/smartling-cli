@@ -5,17 +5,12 @@ package smartling
 import (
 	"net/http"
 	"time"
-
-	"log"
 )
 
-// API endpoints
-const (
-	apiBaseUrl  = "https://api.smartling.com"
 
-	authApiAuth    = "/auth-api/v2/authenticate"
-	authApiRefresh = "/auth-api/v2/authenticate/refresh"
-)
+// API base url
+const apiBaseUrl  = "https://api.smartling.com"
+
 
 // Smartling SDK clinet
 type Client struct {
@@ -24,14 +19,16 @@ type Client struct {
 	httpClient      *http.Client
 }
 
+
 // Smartling client initialization
 func NewClient(userIdentifier string, tokenSecret string) *Client {
 	return &Client{
 		baseUrl:    apiBaseUrl,
-		auth:       &Auth { userIdentifier, tokenSecret },
+		auth:       &Auth { userIdentifier, tokenSecret, Token{}, Token{} },
 		httpClient: &http.Client{ Timeout: 60 * time.Second },
 	}
 }
+
 
 // custom initialization with overrided base url
 func NewClientWithBaseUrl(userIdentifier string, tokenSecret string, baseUrl string) *Client {
@@ -40,22 +37,10 @@ func NewClientWithBaseUrl(userIdentifier string, tokenSecret string, baseUrl str
 	return client
 }
 
-// attempts to authenticate with smnartling
+// attempts to authenticate with smartling
 // not a required call
 func (c *Client) AuthenticationTest() error {
-	authBytes, err := c.auth.authData()
-	if err != nil {
-		return err
-	}
-	bytes, status, err := c.doPostRequest(c.baseUrl + authApiAuth, authBytes)
-
-	if err != nil {
-		return err
-	}
-
-	log.Printf("auth status %v, response: %#v", status, string(bytes))
-
-	return nil
+	return c.auth.doAuthCall(c)
 }
 
 func (c *Client) SetHttpTimeout(t time.Duration) {

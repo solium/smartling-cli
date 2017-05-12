@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	userIdentifier = "gwadsptgphgkdzhqvwmwvithbusrup"
-	tokenSecret = "n53mvfl4hct6c357c9eamntgdYt}ddu9frj5h32fdjfrq5jmrrbfg4"
+	userIdentifier = ""
+	tokenSecret    = ""
 )
 
 func main() {
@@ -26,5 +26,14 @@ func main() {
 		return
 	}
 
+	log.Printf("Success")
+
+	log.Printf("Listing projects:")
+
+	err = client.ListProjects("")
+	if err != nil {
+		log.Printf("%v", err.Error())
+		return
+	}
 	log.Printf("Success")
 }
