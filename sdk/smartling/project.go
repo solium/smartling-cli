@@ -15,14 +15,15 @@ const (
 
 func (c *Client) ListProjects(accountId string) (error) {
 
-	header := c.auth.AccessHeader()
-	bytes, statusCode, err := c.doGetRequest(c.baseUrl + fmt.Sprintf(projectApiList, accountId), header)
-
+	header, err := c.auth.AccessHeader(c)
 	if err != nil {
 		return err
 	}
 
-	log.Printf("%v", string(bytes))
+	bytes, statusCode, err := c.doGetRequest(c.baseUrl + fmt.Sprintf(projectApiList, accountId), header)
+	if err != nil {
+		return err
+	}
 
 	if statusCode != 200 {
 		return fmt.Errorf("ListProjects call returned unexpected status code: %v", statusCode)
@@ -35,7 +36,6 @@ func (c *Client) ListProjects(accountId string) (error) {
 	if err != nil {
 		return err
 	}
-	log.Printf("%#v", apiResponse)
 
 	log.Printf("List proijects - received %v status code", statusCode)
 

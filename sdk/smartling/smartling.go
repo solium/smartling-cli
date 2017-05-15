@@ -40,7 +40,7 @@ func NewClientWithBaseUrl(userIdentifier string, tokenSecret string, baseUrl str
 // attempts to authenticate with smartling
 // not a required call
 func (c *Client) AuthenticationTest() error {
-	return c.auth.doAuthCall(c)
+	return c.auth.doAuthCall(c, true)
 }
 
 func (c *Client) SetHttpTimeout(t time.Duration) {

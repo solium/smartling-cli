@@ -15,6 +15,7 @@ const (
 	authApiRefresh = "/auth-api/v2/authenticate/refresh"
 )
 
+const tokenExpirationSafetyDuration = time.Duration(30) * time.Second
 
 // auth api call response data
 type AuthApiResponse struct {
@@ -37,6 +38,15 @@ func (t *Token) IsValid() bool {
 	return time.Now().Before(t.ExpirationDate)
 }
 
+// true if token will last more then tokenExpirationSafetyDuration
+func (t *Token) IsSafe() bool {
+	if !t.IsValid() {
+		return false
+	}
+
+	return time.Now().Add(tokenExpirationSafetyDuration).Before(t.ExpirationDate)
+}
+
 
 type Auth struct {
 	userIdentifier  string
@@ -46,11 +56,36 @@ type Auth struct {
 }
 
 // get access token for request
-func (a *Auth) AccessHeader() string {
-	return fmt.Sprintf("Bearer %v", a.accessToken.Token)
+func (a *Auth) AccessHeader(c *Client) (string, error) {
+	// check if auth token is still valid
+	if a.accessToken.IsSafe() {
+		return fmt.Sprintf("Bearer %v", a.accessToken.Token), nil
+	}
+
+	// if reauth token is not valid as well - we need to relogin
+	if !a.reauthToken.IsValid() {
+		// do reauth call
+		err := a.doAuthCall(c, false)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		// issue reauth call to refresh access token
+		err := a.doAuthCall(c, true)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	return a.AccessHeader(c)
 }
 
 func (a *Auth) authData() ([]byte, error) {
+
+	// validate input
+	if len(a.userIdentifier) == 0 || len(a.tokenSecret) == 0 {
+		return nil, fmt.Errorf("User credentials are not set")
+	}
 
 	// prepare the auth map
 	authInfo := make(map[string]string)
@@ -61,15 +96,42 @@ func (a *Auth) authData() ([]byte, error) {
 	return json.Marshal(&authInfo)
 }
 
-// actually performs auth call
-func (a *Auth) doAuthCall(c *Client) error {
-	authBytes, err := a.authData()
-	if err != nil {
-		return err
+func (a *Auth) reauthData () ([]byte, error) {
+	// validate input
+	if !a.reauthToken.IsValid() {
+		return nil, fmt.Errorf("Reauth token is invalid")
 	}
-	// use empty auth header
-	bytes, statusCode, err := c.doPostRequest(c.baseUrl + authApiAuth, "", authBytes)
 
+	// prepare the map
+	authInfo := make(map[string]string)
+	authInfo["refreshToken"] = a.reauthToken.Token
+
+	// marshall into bytes
+	return json.Marshal(&authInfo)
+}
+
+// actually performs auth call
+func (a *Auth) doAuthCall(c *Client, isReauth bool) error {
+
+	var authBytes []byte
+	var err error = nil
+	var apiCall string = ""
+	if !isReauth {
+		apiCall = authApiAuth
+		authBytes, err = a.authData()
+		if err != nil {
+			return err
+		}
+	} else {
+		apiCall = authApiRefresh
+		authBytes, err = a.reauthData()
+		if err != nil {
+			return err
+		}
+	}
+
+	// use empty auth header
+	bytes, statusCode, err := c.doPostRequest(c.baseUrl + apiCall, "", authBytes)
 	if err != nil {
 		return err
 	}
@@ -80,7 +142,6 @@ func (a *Auth) doAuthCall(c *Client) error {
 
 	// unmarshal transport header
 	apiResponse := SmartlingApiResponse{}
-
 	err = json.Unmarshal(bytes, &apiResponse)
 	if err != nil {
 		return err
@@ -94,7 +155,6 @@ func (a *Auth) doAuthCall(c *Client) error {
 
 	// unmarshal auth body
 	authResponse := AuthApiResponse{}
-
 	err = json.Unmarshal(apiResponse.Response.Data, &authResponse)
 	if err != nil {
 		return err
@@ -111,3 +171,4 @@ func (a *Auth) doAuthCall(c *Client) error {
 
 	return nil
 }
+
