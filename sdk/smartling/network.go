@@ -49,7 +49,6 @@ func (c *Client) doPostRequest(apiCall string, authHeader string, data []byte) (
 // helper function to actually do a get request
 func (c *Client) doGetRequest(apiCall string, authHeader string) (response []byte, statusCode int, err error) {
 
-	log.Printf(apiCall)
 	request, err := http.NewRequest("GET", apiCall, nil)
 	if err != nil {
 		return

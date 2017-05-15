@@ -123,6 +123,7 @@ func (a *Auth) doAuthCall(c *Client, isReauth bool) error {
 			return err
 		}
 	} else {
+		log.Printf("REFRESH CALL")
 		apiCall = authApiRefresh
 		authBytes, err = a.reauthData()
 		if err != nil {
