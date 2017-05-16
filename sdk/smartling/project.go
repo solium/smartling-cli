@@ -23,12 +23,12 @@ type ProjectsList struct {
 }
 
 type Project struct {
-	PprojectId              string
-	ProjectName             string
-	AccountUid              string
-	SourceLocaleId          string
-	SourceLocaleDescription string
-	Archived                bool
+	ProjectId		string
+	ProjectName		string
+	AccountUid		string
+	SourceLocaleId		string
+	SourceLocaleDescription	string
+	Archived		bool
 }
 
 type ProjectDetails struct {
@@ -37,15 +37,15 @@ type ProjectDetails struct {
 }
 
 type Locale struct {
-	LocaleId    string
-	Description string
+	LocaleId	string
+	Description	string
 }
 
 type ProjectListRequest struct {
-	ProjectNameFilter string
-	IncludeArchived   bool
-	Limit             int64
-	Offset            int64
+	ProjectNameFilter	string
+	IncludeArchived		bool
+	Limit			int64
+	Offset			int64
 }
 
 // encode struct fields into raw query
