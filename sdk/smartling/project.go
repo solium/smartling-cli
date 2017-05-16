@@ -3,7 +3,6 @@ package smartling
 import (
 	"encoding/json"
 	"net/url"
-	"strconv"
 	"fmt"
 	"log"
 )
@@ -47,22 +46,6 @@ type ProjectListRequest struct {
 	Limit			int64
 	Offset			int64
 }
-
-// encode struct fields into raw query
-func (plr *ProjectListRequest) RawQuery() string {
-	q := url.Values{}
-	if len(plr.ProjectNameFilter) > 0 {
-		q.Set("projectNameFilter", plr.ProjectNameFilter)
-	}
-	q.Set("includeArchived", strconv.FormatBool(plr.IncludeArchived))
-	if plr.Limit > 0 {
-		q.Set("limit", strconv.FormatInt(plr.Limit, 10))
-	}
-	q.Set("offset", strconv.FormatInt(plr.Offset, 10))
-
-	return q.Encode()
-}
-
 
 func (c *Client) ListProjects(accountId string, listRequest ProjectListRequest) (list ProjectsList, err error) {
 
