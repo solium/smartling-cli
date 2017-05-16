@@ -18,9 +18,9 @@ import (
 )
 
 const (
-	//userIdentifier = "" // put your user identifier here
-	//tokenSecret    = "" // put your token secret here
-	//accountId      = "" // put your account id here
+	userIdentifier = "" // put your user identifier here
+	tokenSecret    = "" // put your token secret here
+	accountId      = "" // put your account id here
 )
 
 func main() {
