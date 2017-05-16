@@ -2,6 +2,8 @@ package smartling
 
 import (
 	"encoding/json"
+	"net/url"
+	"strconv"
 	"fmt"
 	"log"
 )
@@ -15,17 +17,18 @@ const (
 
 
 // list project api call response data
-type ProjectsApiResponse struct {
-	Items []Project
+type ProjectsList struct {
+	TotalCount int64
+	Items      []Project
 }
 
 type Project struct {
-	PprojectId string
-	ProjectName string
-	AccountUid string
-	SourceLocaleId string
+	PprojectId              string
+	ProjectName             string
+	AccountUid              string
+	SourceLocaleId          string
 	SourceLocaleDescription string
-	Archived bool
+	Archived                bool
 }
 
 type ProjectDetails struct {
@@ -34,19 +37,48 @@ type ProjectDetails struct {
 }
 
 type Locale struct {
-	LocaleId string
+	LocaleId    string
 	Description string
 }
 
+type ProjectListRequest struct {
+	ProjectNameFilter string
+	IncludeArchived   bool
+	Limit             int64
+	Offset            int64
+}
 
-func (c *Client) ListProjects(accountId string) (projects []Project, err error) {
+// encode struct fields into raw query
+func (plr *ProjectListRequest) RawQuery() string {
+	q := url.Values{}
+	if len(plr.ProjectNameFilter) > 0 {
+		q.Set("projectNameFilter", plr.ProjectNameFilter)
+	}
+	q.Set("includeArchived", strconv.FormatBool(plr.IncludeArchived))
+	if plr.Limit > 0 {
+		q.Set("limit", strconv.FormatInt(plr.Limit, 10))
+	}
+	q.Set("offset", strconv.FormatInt(plr.Offset, 10))
+
+	return q.Encode()
+}
+
+
+func (c *Client) ListProjects(accountId string, listRequest ProjectListRequest) (list ProjectsList, err error) {
 
 	header, err := c.auth.AccessHeader(c)
 	if err != nil {
 		return
 	}
 
-	bytes, statusCode, err := c.doGetRequest(c.baseUrl + fmt.Sprintf(projectApiList, accountId), header)
+	// prepare the url
+	urlObject, err := url.Parse(c.baseUrl + fmt.Sprintf(projectApiList, accountId))
+	if err != nil {
+		return
+	}
+	urlObject.RawQuery = listRequest.RawQuery()
+
+	bytes, statusCode, err := c.doGetRequest(urlObject.String(), header)
 	if err != nil {
 		return
 	}
@@ -57,22 +89,21 @@ func (c *Client) ListProjects(accountId string) (projects []Project, err error) 
 	}
 
 	// unmarshal transport header
-	apiResponse := SmartlingApiResponse{}
-	err = json.Unmarshal(bytes, &apiResponse)
+	apiResponse, err := unmarshalTransportHeader(bytes)
 	if err != nil {
 		return
 	}
 
 	// unmarshal projects array
-	projectsApiResponse := ProjectsApiResponse{}
-	err = json.Unmarshal(apiResponse.Response.Data, &projectsApiResponse)
+	err = json.Unmarshal(apiResponse.Response.Data, &list)
 	if err != nil {
+		// TODO: special error here
 		return
 	}
 
 	log.Printf("List proijects - received %v status code", statusCode)
 
-	return projectsApiResponse.Items, nil
+	return
 }
 
 func (c *Client) ProjectDetails(projectId string) (projectDetails ProjectDetails, err error) {
@@ -93,8 +124,7 @@ func (c *Client) ProjectDetails(projectId string) (projectDetails ProjectDetails
 	}
 
 	// unmarshal transport header
-	apiResponse := SmartlingApiResponse{}
-	err = json.Unmarshal(bytes, &apiResponse)
+	apiResponse, err := unmarshalTransportHeader(bytes)
 	if err != nil {
 		return
 	}

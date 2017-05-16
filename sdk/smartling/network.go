@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
-	"log"
 )
 
 type SmartlingApiResponse struct {
@@ -17,6 +16,14 @@ type SmartlingApiResponse struct {
 type SmartlingResult struct {
 	Code string
 	Data json.RawMessage
+}
+
+// parses smartling header wrapper
+func unmarshalTransportHeader(bytes []byte) (apiResponse SmartlingApiResponse, err error) {
+
+	// unmarshal transport header
+	err = json.Unmarshal(bytes, &apiResponse)
+	return
 }
 
 // helper function to actually do a post request
