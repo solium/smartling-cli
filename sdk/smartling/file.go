@@ -11,7 +11,8 @@ import (
 
 // API endpoints
 const (
-	fileApiList    = "/files-api/v2/projects/%v/files/list"
+	fileApiList      = "/files-api/v2/projects/%v/files/list"
+	fileApiListTypes = "/files-api/v2/projects/%v/file-types"
 )
 
 type FileType string
@@ -91,7 +92,7 @@ func (c *Client) ListFiles(projectId string, listRequest FileListRequest) (list 
 		return
 	}
 
-	// unmarshal projects array
+	// unmarshal file items array
 	err = json.Unmarshal(apiResponse.Response.Data, &list)
 	if err != nil {
 		// TODO: special error here
@@ -99,6 +100,56 @@ func (c *Client) ListFiles(projectId string, listRequest FileListRequest) (list 
 	}
 
 	log.Printf("List files - received %v status code", statusCode)
+
+	return
+}
+
+// returns all file types currently represented in a project
+func (c *Client) ListFileTypes(projectId string) (list []FileType, err error) {
+
+	header, err := c.auth.AccessHeader(c)
+	if err != nil {
+		return
+	}
+
+	// prepare the url
+	urlObject, err := url.Parse(c.baseUrl + fmt.Sprintf(fileApiListTypes, projectId))
+	if err != nil {
+		return
+	}
+
+	bytes, statusCode, err := c.doGetRequest(urlObject.String(), header)
+	if err != nil {
+		return
+	}
+
+	if statusCode != 200 {
+		err = fmt.Errorf("ListFileTypes call returned unexpected status code: %v", statusCode)
+		return
+	}
+
+	// unmarshal transport header
+	apiResponse, err := unmarshalTransportHeader(bytes)
+	if err != nil {
+		return
+	}
+
+	// declare a transport struct
+	type TypeList struct {
+		Items []FileType
+	}
+	typeList := TypeList{}
+
+	// unmarshal file types array
+	err = json.Unmarshal(apiResponse.Response.Data, &typeList)
+	if err != nil {
+		// TODO: special error here
+		return
+	}
+
+	list = typeList.Items
+
+	log.Printf("List file types - received %v status code", statusCode)
 
 	return
 }
