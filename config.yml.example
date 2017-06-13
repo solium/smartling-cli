@@ -1,0 +1,10 @@
+user_id:
+    "YOUR_USER_ID_HERE"
+
+secret:
+    "YOUR_SECRET_TOKEN_HERE"
+
+account_id:
+    "YOUR_ACCOUT_ID_HERE"
+
+# vim: ft=yaml
