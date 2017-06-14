@@ -29,7 +29,7 @@ func doProjectsList(
 	for _, project := range projects.Items {
 		fmt.Fprintf(
 			table,
-			"%s\t%s\t%s\t",
+			"%s\t%s\t%s\n",
 			project.ProjectID,
 			project.ProjectName,
 			project.SourceLocaleID,

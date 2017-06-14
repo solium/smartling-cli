@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/Smartling/api-sdk-go"
-	"github.com/reconquest/hierr-go"
 )
 
 func doFilesList(
@@ -16,6 +15,7 @@ func doFilesList(
 	var (
 		short   = args["--short"].(bool)
 		project = args["<project>"].(string)
+		uri, _  = args["<uri>"].(string)
 	)
 
 	if args["--format"] == nil {
@@ -27,17 +27,9 @@ func doFilesList(
 		return err
 	}
 
-	var (
-		request = smartling.FilesListRequest{}
-	)
-
-	files, err := client.ListAllFiles(project, request)
+	files, err := globFiles(client, project, uri)
 	if err != nil {
-		return hierr.Errorf(
-			err,
-			`unable to list files from project "%s"`,
-			project,
-		)
+		return err
 	}
 
 	table := NewTableWriter(os.Stdout)

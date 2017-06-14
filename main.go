@@ -19,7 +19,7 @@ Usage:
   smartling -h | --help
   smartling [options] projects list
   smartling [options] projects info <project>
-  smartling [options] files list <project> [-s] [--format=] 
+  smartling [options] files list <project> [<uri>] [-s] [--format=] 
   smartling [options] files pull <project> [<uri>] [-l=] [-d=]
   smartling [options] files status <project> [<uri>] [--format=] 
 
@@ -45,11 +45,11 @@ Commands:
                             > [!xyz]  — matches not 'x', 'y' or 'z' charachers;
                             > {a,b,c} — matches alternatives a, b or c;
     -d --directory <dir>  Download all files to specified directory.
-	--format <format>     Can be used to format path to downloaded files. Note,
-	                       that single file can be translated in different
-						   locales, so format should include locale to create
-						   several file paths.
-						   [default: $FILE_PULL_FORMAT]
+    --format <format>     Can be used to format path to downloaded files. Note,
+                           that single file can be translated in different
+                           locales, so format should include locale to create
+                           several file paths.
+                           [default: $FILE_PULL_FORMAT]
 
 Options:
   -h --help               Show this help.
