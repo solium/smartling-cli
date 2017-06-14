@@ -24,32 +24,33 @@ Usage:
   smartling [options] files status <project> [<uri>] [--format=] 
 
 Commands:
-  projects                Used to access various project sub-commands.
-   list                   Lists projects for current account.
-   get <project>          Get project details about specific project.
-                           Accepts project ID as <project> parameter.
-  files                    Used to access various files sub-commands.
-   status <project>       Shows file translation status.
-    --format <format>     Specifies format to use for file status output.
-                           [default: $FILE_STATUS_FORMAT]
-   list <project>         Lists files from specified project.
-    -s --short            Output only file URI.
-    --format <format>     Specifies format to use for file list output.
-                           [default: $FILE_LIST_FORMAT]
-   pull <project> <uri>   Pulls specified files from server. URI supports
-                           following globbing patterns:
-                            > ** — matches any number of any chars;
-                            > *  — matches any number of chars except '/';
-                            > ?  — matches any single char except '/';
-                            > [xyz]   — matches 'x', 'y' or 'z' charachers;
-                            > [!xyz]  — matches not 'x', 'y' or 'z' charachers;
-                            > {a,b,c} — matches alternatives a, b or c;
-    -d --directory <dir>  Download all files to specified directory.
-    --format <format>     Can be used to format path to downloaded files. Note,
-                           that single file can be translated in different
-                           locales, so format should include locale to create
-                           several file paths.
-                           [default: $FILE_PULL_FORMAT]
+  projects                 Used to access various project sub-commands.
+   list                    Lists projects for current account.
+   get <project>           Get project details about specific project.
+                            Accepts project ID as <project> parameter.
+  files                     Used to access various files sub-commands.
+   status <project> <uri>  Shows file translation status.
+    --format <format>      Specifies format to use for file status output.
+                            [default: $FILE_STATUS_FORMAT]
+   list <project> <uri>    Lists files from specified project.
+    -s --short             Output only file URI.
+    --format <format>      Specifies format to use for file list output.
+                            [default: $FILE_LIST_FORMAT]
+   pull <project> <uri>    Pulls specified files from server.
+    -d --directory <dir>   Download all files to specified directory.
+    --format <format>      Can be used to format path to downloaded files.
+                            Note, that single file can be translated in
+                            different locales, so format should include locale
+                            to create several file paths.
+                            [default: $FILE_PULL_FORMAT]
+
+All <uri> arguments support globbing with following patterns:
+  > ** — matches any number of any chars;
+  > *  — matches any number of chars except '/';
+  > ?  — matches any single char except '/';
+  > [xyz]   — matches 'x', 'y' or 'z' charachers;
+  > [!xyz]  — matches not 'x', 'y' or 'z' charachers;
+  > {a,b,c} — matches alternatives a, b or c;
 
 Options:
   -h --help               Show this help.
