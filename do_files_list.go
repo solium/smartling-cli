@@ -18,38 +18,31 @@ func doFilesList(
 		project = args["<project>"].(string)
 	)
 
-	format, err := CompileFormatOption("--format", args["--format"].(string))
+	if args["--format"] == nil {
+		args["--format"] = defaultFilesListFormat
+	}
+
+	format, err := CompileFormatOption(args)
 	if err != nil {
 		return err
 	}
 
 	var (
 		request = smartling.FilesListRequest{}
-		result  = []smartling.FileStatus{}
 	)
 
-	for {
-		files, err := client.ListFiles(project, request)
-		if err != nil {
-			return hierr.Errorf(
-				err,
-				`unable to list files from project "%s"`,
-				project,
-			)
-		}
-
-		result = append(result, files.Items...)
-
-		if request.Cursor.Offset+len(files.Items) < files.TotalCount {
-			request.Cursor.Offset = len(files.Items)
-		} else {
-			break
-		}
+	files, err := client.ListAllFiles(project, request)
+	if err != nil {
+		return hierr.Errorf(
+			err,
+			`unable to list files from project "%s"`,
+			project,
+		)
 	}
 
 	table := NewTableWriter(os.Stdout)
 
-	for _, file := range result {
+	for _, file := range files {
 		if short {
 			fmt.Fprintf(table, "%s\n", file.FileURI)
 		} else {

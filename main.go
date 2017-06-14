@@ -19,18 +19,37 @@ Usage:
   smartling -h | --help
   smartling [options] projects list
   smartling [options] projects info <project>
-  smartling [options] files list [-s] [--format=] <project>
+  smartling [options] files list <project> [-s] [--format=] 
+  smartling [options] files pull <project> [<uri>] [-l=] [-d=]
+  smartling [options] files status <project> [<uri>] [--format=] 
 
 Commands:
-  projects               Used to access various project sub-commands.
-    list                 Lists projects for current account.
-    get                  Get project details about specific project.
-                          Accepts project ID as <project> parameter.
-  files                  Used to access various files sub-commands.
-    list                 Lists files from specified project.
-      -s --short         Output only file URI.
-      --format <format>  Specifies format to use for file list output.
-                          [default: $FILES_FORMAT_TEMPLATE]
+  projects                Used to access various project sub-commands.
+   list                   Lists projects for current account.
+   get <project>          Get project details about specific project.
+                           Accepts project ID as <project> parameter.
+  files                    Used to access various files sub-commands.
+   status <project>       Shows file translation status.
+    --format <format>     Specifies format to use for file status output.
+                           [default: $FILE_STATUS_FORMAT]
+   list <project>         Lists files from specified project.
+    -s --short            Output only file URI.
+    --format <format>     Specifies format to use for file list output.
+                           [default: $FILE_LIST_FORMAT]
+   pull <project> <uri>   Pulls specified files from server. URI supports
+                           following globbing patterns:
+                            > ** — matches any number of any chars;
+                            > *  — matches any number of chars except '/';
+                            > ?  — matches any single char except '/';
+                            > [xyz]   — matches 'x', 'y' or 'z' charachers;
+                            > [!xyz]  — matches not 'x', 'y' or 'z' charachers;
+                            > {a,b,c} — matches alternatives a, b or c;
+    -d --directory <dir>  Download all files to specified directory.
+	--format <format>     Can be used to format path to downloaded files. Note,
+	                       that single file can be translated in different
+						   locales, so format should include locale to create
+						   several file paths.
+						   [default: $FILE_PULL_FORMAT]
 
 Options:
   -h --help               Show this help.
@@ -47,19 +66,33 @@ Options:
                            This option ovverides config value "secret".
   -s --short              Use short list output, usually outputs only first
                            column, e.g. file URI in case of files list.
+  -l --locale <locale>    Sets locale to filter by or operate upon. Depends on
+                           command.
+  -d --directory <dir>    Sets directory to operate on, usually, to store or to
+                           read files.  Depends on command.  [default: .]
 `
 
+const (
+	defaultFilesListFormat  = `{{.FileURI}}\t{{.LastUploaded}}\t{{.FileType}}\n`
+	defaultFileStatusFormat = `{{.FileURI}}\t{{.Locale}}\t{{.Status}}\t{{.Progress}}\n`
+	defaultFilePullFormat   = `{{name .FileURI}}@{{.Locale}}{{ext .FileURI}}`
+)
+
 func main() {
-	const (
-		defaultFilesListFormat = `{{.FileURI}}\t{{.LastUploaded}}\t{{.FileType}}\n`
-	)
 
 	usage := os.Expand(usage, func(key string) string {
 		switch key {
 		case "HOME":
 			return os.Getenv(key)
-		case "FILES_FORMAT_TEMPLATE":
+
+		case "FILE_LIST_FORMAT":
 			return defaultFilesListFormat
+
+		case "FILE_PULL_FORMAT":
+			return defaultFilePullFormat
+
+		case "FILE_STATUS_FORMAT":
+			return defaultFileStatusFormat
 		}
 
 		return key
@@ -68,10 +101,6 @@ func main() {
 	args, err := docopt.Parse(usage, nil, true, "smartling "+version, false)
 	if err != nil {
 		panic(err)
-	}
-
-	if args["--format"] == nil {
-		args["--format"] = defaultFilesListFormat
 	}
 
 	config, err := loadConfig(args)
@@ -87,7 +116,6 @@ func main() {
 
 	case args["files"].(bool):
 		err = files(config, args)
-
 	}
 
 	if err != nil {
@@ -168,6 +196,13 @@ func files(config Config, args map[string]interface{}) error {
 	switch {
 	case args["list"].(bool):
 		return doFilesList(client, config, args)
+
+	case args["pull"].(bool):
+		return doFilesPull(client, config, args)
+
+	case args["status"].(bool):
+		return doFilesStatus(client, config, args)
+
 	}
 
 	return nil
