@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/user"
 	"strconv"
 
 	"github.com/Smartling/api-sdk-go"
@@ -57,7 +56,7 @@ Commands:
 Options:
   -h --help               Show this help.
   -c --config <file>      Config file in YAML format.
-                           [default: $HOME/.config/smartling/config.yml]
+                           [default: smartling.yml]
   -p --project <project>  Project ID to operate on.
                            This option ovverides config value "project_id".
   -a --account <account>  Account ID to operate on.
@@ -92,16 +91,8 @@ const (
 )
 
 func main() {
-	currentUser, err := user.Current()
-	if err != nil {
-		panic(err)
-	}
-
 	usage := os.Expand(usage, func(key string) string {
 		switch key {
-		case "HOME":
-			return currentUser.HomeDir
-
 		case "FILE_LIST_FORMAT":
 			return defaultFilesListFormat
 
