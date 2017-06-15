@@ -20,6 +20,11 @@ account_id:
     "YOUR_ACCOUT_ID_HERE"
 
 
+# (optional) Project ID you are working on.
+project_id:
+    "YOUR_PROJECT_ID_HERE"
+
+
 # (optional) Additional file-specific settings for push and pull commands.
 files:
     # (optional) Special default section will apply configuration to all file
@@ -39,8 +44,9 @@ files:
     # > *  - matches everything except /.
     # > ** - matches everything.
     # 
-    # Note, that pattern should start either with /, * or ** to be matched,
-    # because file URIs are always starts with / in API replies.
+    # Note, that pattern should start either with /, * or ** to be matched
+    # in case when file was pushed with leading /. Checkout files list in
+    # your project first.
     "/path/to/*.properties":
         # (optional) Defines push-specific options.
         push:
