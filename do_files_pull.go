@@ -1,11 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"path/filepath"
-
 	"github.com/Smartling/api-sdk-go"
-	hierr "github.com/reconquest/hierr-go"
 )
 
 func doFilesPull(
@@ -15,7 +11,7 @@ func doFilesPull(
 ) error {
 	var (
 		directory = args["--directory"].(string)
-		project   = args["<project>"].(string)
+		project   = args["--project"].(string)
 		uri, _    = args["<uri>"].(string)
 	)
 
@@ -33,42 +29,24 @@ func doFilesPull(
 		return err
 	}
 
+	pool := NewThreadPool(config.Threads)
+
 	for _, file := range files {
-		status, err := client.GetFileStatus(project, file.FileURI)
-		if err != nil {
-			return hierr.Errorf(
-				err,
-				`unable to retrieve file "%s" locales from project "%s"`,
-				file.FileURI,
-				project,
-			)
-		}
-
-		for _, locale := range status.Items {
-			buffer := &bytes.Buffer{}
-
-			data := map[string]interface{}{
-				"FileURI": file.FileURI,
-				"Locale":  locale.LocaleID,
-			}
-
-			err = format.Execute(buffer, data)
-			if err != nil {
-				return FormatExecutionError{
-					Cause:  err,
-					Format: args["--format"].(string),
-					Data:   file,
-				}
-			}
-
-			path := filepath.Join(directory, buffer.String())
-
-			err = downloadFile(client, project, file, locale.LocaleID, path)
-			if err != nil {
-				return err
-			}
-		}
+		// func closure required to pass different file objects to goroutines
+		func(file smartling.File) {
+			pool.Do(func() {
+				downloadAllFileLocales(
+					client,
+					project,
+					file,
+					format,
+					directory,
+				)
+			})
+		}(file)
 	}
+
+	pool.Wait()
 
 	return nil
 }

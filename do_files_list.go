@@ -14,7 +14,7 @@ func doFilesList(
 ) error {
 	var (
 		short   = args["--short"].(bool)
-		project = args["<project>"].(string)
+		project = args["--project"].(string)
 		uri, _  = args["<uri>"].(string)
 	)
 

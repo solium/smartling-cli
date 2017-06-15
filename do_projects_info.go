@@ -8,12 +8,12 @@ import (
 	hierr "github.com/reconquest/hierr-go"
 )
 
-func doProjectsGet(
+func doProjectsInfo(
 	client *smartling.Client,
 	config Config,
 	args map[string]interface{},
 ) error {
-	project := args["<project>"].(string)
+	project := args["--project"].(string)
 
 	details, err := client.GetProjectDetails(project)
 	if err != nil {

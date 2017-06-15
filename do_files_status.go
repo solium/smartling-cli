@@ -12,7 +12,7 @@ func doFilesStatus(
 	args map[string]interface{},
 ) error {
 	var (
-		project = args["<project>"].(string)
+		project = args["--project"].(string)
 		uri, _  = args["<uri>"].(string)
 	)
 

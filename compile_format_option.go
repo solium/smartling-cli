@@ -8,9 +8,15 @@ import (
 	"github.com/reconquest/hierr-go"
 )
 
+type Format struct {
+	*template.Template
+
+	Source string
+}
+
 func CompileFormatOption(
 	args map[string]interface{},
-) (*template.Template, error) {
+) (*Format, error) {
 	value := args["--format"].(string)
 
 	value = strings.NewReplacer(`\n`, "\n", `\t`, "\t").Replace(value)
@@ -25,7 +31,12 @@ func CompileFormatOption(
 		},
 	}
 
-	format, err := template.New("format").Funcs(funcs).Parse(value)
+	var (
+		format Format
+		err    error
+	)
+
+	format.Template, err = template.New("format").Funcs(funcs).Parse(value)
 	if err != nil {
 		return nil, NewError(
 			hierr.Errorf(
@@ -38,5 +49,5 @@ func CompileFormatOption(
 		)
 	}
 
-	return format, nil
+	return &format, nil
 }

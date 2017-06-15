@@ -12,6 +12,7 @@ type Config struct {
 	Secret    string `yaml:"secret",required:"true"`
 	AccountID string `yaml:"account_id"`
 	ProjectID string `yaml:"project_id"`
+	Threads   int    `yaml:"threads"`
 
 	path string
 }
