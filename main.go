@@ -8,6 +8,7 @@ import (
 
 	"github.com/Smartling/api-sdk-go"
 	"github.com/docopt/docopt-go"
+	"github.com/kovetskiy/lorg"
 	"github.com/reconquest/hierr-go"
 )
 
@@ -19,11 +20,11 @@ TBD.
 
 Usage:
   smartling -h | --help
-  smartling [options] projects list
-  smartling [options] projects info
-  smartling [options] files list [-s] [--format=] [<uri>]
-  smartling [options] files pull [-l=] [-d=] [<uri>]
-  smartling [options] files status [--format=] [<uri>]
+  smartling [options] [-v]... projects list
+  smartling [options] [-v]... projects info
+  smartling [options] [-v]... files list [-s] [--format=] [<uri>]
+  smartling [options] [-v]... files pull [-l=] [-d=] [<uri>]
+  smartling [options] [-v]... files status [--format=] [<uri>]
 
 All <uri> arguments support globbing with following patterns:
   > ** — matches any number of any chars;
@@ -74,7 +75,15 @@ Options:
   --threads <number>      If command can be executed concurrently, it will be
                            executed for at most <number> of threads.
                            [default: 4]
+  -v --verbose            Sets verbosity level for logging messages. Specify
+                           flag several time to increase verbosity. Useful
+                           when debugging and investigating unexpected
+                           behavior.
 `
+
+var (
+	logger = lorg.NewLog()
+)
 
 const (
 	defaultFilesListFormat  = `{{.FileURI}}\t{{.LastUploaded}}\t{{.FileType}}\n`
@@ -117,6 +126,17 @@ func main() {
 
 		os.Exit(1)
 	}
+
+	switch args["--verbose"].(int) {
+	case 1:
+		logger.SetLevel(lorg.LevelInfo)
+
+	case 2:
+		logger.SetLevel(lorg.LevelDebug)
+	}
+
+	logger.SetFormat(lorg.NewFormat("* ${time} ${level:[%s]:right} %s"))
+	logger.SetIndentLines(true)
 
 	switch {
 	case args["projects"].(bool):
@@ -215,6 +235,8 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 func projects(config Config, args map[string]interface{}) error {
 	client := smartling.NewClient(config.UserID, config.Secret)
 
+	setLogger(client, logger, args["--verbose"].(int))
+
 	switch {
 	case args["list"].(bool):
 		if config.AccountID == "" {
@@ -240,6 +262,8 @@ func projects(config Config, args map[string]interface{}) error {
 
 func files(config Config, args map[string]interface{}) error {
 	client := smartling.NewClient(config.UserID, config.Secret)
+
+	setLogger(client, logger, args["--verbose"].(int))
 
 	switch {
 	case args["list"].(bool):
