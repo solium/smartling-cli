@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/user"
 
 	"github.com/Smartling/api-sdk-go"
 	"github.com/docopt/docopt-go"
@@ -80,11 +81,15 @@ const (
 )
 
 func main() {
+	currentUser, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
 
 	usage := os.Expand(usage, func(key string) string {
 		switch key {
 		case "HOME":
-			return os.Getenv(key)
+			return currentUser.HomeDir
 
 		case "FILE_LIST_FORMAT":
 			return defaultFilesListFormat
