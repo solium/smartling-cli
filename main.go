@@ -73,7 +73,7 @@ Options:
                            read files.  Depends on command.  [default: .]
   --threads <number>      If command can be executed concurrently, it will be
                            executed for at most <number> of threads.
-						   [default: 4]
+                           [default: 4]
 `
 
 const (
