@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/Smartling/api-sdk-go"
+	hierr "github.com/reconquest/hierr-go"
 )
 
 func doFilesList(
@@ -38,13 +40,17 @@ func doFilesList(
 		if short {
 			fmt.Fprintf(table, "%s\n", file.FileURI)
 		} else {
-			err := format.Execute(table, file)
+			row, err := format.Execute(file)
 			if err != nil {
-				return FormatExecutionError{
-					Cause:  err,
-					Format: args["--format"].(string),
-					Data:   file,
-				}
+				return err
+			}
+
+			_, err = io.WriteString(table, row)
+			if err != nil {
+				return hierr.Errorf(
+					err,
+					"unable to write row to output table",
+				)
 			}
 		}
 	}

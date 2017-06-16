@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
+	"text/tabwriter"
 
 	"github.com/Smartling/api-sdk-go"
 )
@@ -12,8 +15,9 @@ func doFilesStatus(
 	args map[string]interface{},
 ) error {
 	var (
-		project = args["--project"].(string)
-		uri, _  = args["<uri>"].(string)
+		project   = args["--project"].(string)
+		uri, _    = args["<uri>"].(string)
+		directory = args["--directory"].(string)
 	)
 
 	if args["--format"] == nil {
@@ -30,20 +34,69 @@ func doFilesStatus(
 		return err
 	}
 
-	table := NewTableWriter(os.Stdout)
+	var (
+		table = NewTableWriter(os.Stdout)
+	)
 
 	for _, file := range files {
-		//row := map[string]interface{}{
-		//    "FileURI": file.FileURI,
-		//    "Status": "untracked",
-		//    "Locale":
-		err := format.Execute(table, file)
+		path, err := format.Execute(map[string]interface{}{
+			"FileURI": file.FileURI,
+		})
 		if err != nil {
-			return FormatExecutionError{
-				Cause:  err,
-				Format: args["--format"].(string),
-				Data:   file,
+			return err
+		}
+
+		status, err := client.GetFileStatus(project, file.FileURI)
+		if err != nil {
+			return err
+		}
+
+		path = filepath.Join(directory, path)
+
+		state := "source"
+		if !isFileExists(path) {
+			state = "missing"
+		}
+
+		writeFileStatus(table, map[string]string{
+			"Path":     path,
+			"State":    state,
+			"Progress": "source",
+			"Strings":  fmt.Sprint(status.TotalStringCount),
+			"Words":    fmt.Sprint(status.TotalWordCount),
+		})
+
+		for _, locale := range status.Items {
+			path, err := format.Execute(map[string]interface{}{
+				"FileURI": file.FileURI,
+				"Locale":  locale.LocaleID,
+			})
+			if err != nil {
+				return err
 			}
+
+			path = filepath.Join(directory, path)
+
+			state := "remote"
+			if !isFileExists(path) {
+				state = "missing"
+			}
+
+			writeFileStatus(table, map[string]string{
+				"Path":   path,
+				"Locale": locale.LocaleID,
+				"State":  state,
+				"Progress": fmt.Sprintf(
+					"%d%%",
+					int(
+						100*
+							float64(locale.CompletedStringCount)/
+							float64(status.TotalStringCount),
+					),
+				),
+				"Strings": fmt.Sprint(locale.CompletedStringCount),
+				"Words":   fmt.Sprint(locale.CompletedWordCount),
+			})
 		}
 	}
 
@@ -53,4 +106,17 @@ func doFilesStatus(
 	}
 
 	return nil
+}
+
+func writeFileStatus(table *tabwriter.Writer, row map[string]string) {
+	fmt.Fprintf(
+		table,
+		"%s\t%s\t%s\t%s\t%s\t%s\n",
+		row["Path"],
+		row["Locale"],
+		row["State"],
+		row["Progress"],
+		row["Strings"],
+		row["Words"],
+	)
 }

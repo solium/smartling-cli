@@ -8,12 +8,6 @@ import (
 	"github.com/reconquest/hierr-go"
 )
 
-type Format struct {
-	*template.Template
-
-	Source string
-}
-
 func CompileFormatOption(
 	args map[string]interface{},
 ) (*Format, error) {

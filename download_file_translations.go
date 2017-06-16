@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"path/filepath"
 
@@ -36,22 +35,17 @@ func downloadFileTranslations(
 	}
 
 	for _, locale := range translations {
-		buffer := &bytes.Buffer{}
-
-		data := map[string]interface{}{
-			"FileURI": file.FileURI,
-			"Locale":  locale.LocaleID,
-		}
-
-		err = format.Execute(buffer, data)
+		path, err := format.Execute(
+			map[string]interface{}{
+				"FileURI": file.FileURI,
+				"Locale":  locale.LocaleID,
+			},
+		)
 		if err != nil {
-			return FormatExecutionError{
-				Cause: err,
-				Data:  file,
-			}
+			return err
 		}
 
-		path := filepath.Join(directory, buffer.String())
+		path = filepath.Join(directory, path)
 
 		err = downloadFile(client, project, file, locale.LocaleID, path)
 		if err != nil {

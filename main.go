@@ -23,7 +23,7 @@ Usage:
   smartling [options] [-v]... projects info
   smartling [options] [-v]... files list [--format=] [<uri>]
   smartling [options] [-v]... files pull [-l=] [-d=] [--source] [<uri>]
-  smartling [options] [-v]... files status [--format=] [<uri>]
+  smartling [options] [-v]... files status [-d=] [--format=] [<uri>]
 
 All <uri> arguments support globbing with following patterns:
   > ** — matches any number of any chars;
@@ -87,8 +87,8 @@ var (
 
 const (
 	defaultFilesListFormat  = `{{.FileURI}}\t{{.LastUploaded}}\t{{.FileType}}\n`
-	defaultFileStatusFormat = `{{.FileURI}}\t{{.Locale}}\t{{.Status}}\t{{.Progress}}\n`
-	defaultFilePullFormat   = `{{name .FileURI}}{{with .Locale}}@{{.}}{{end}}{{ext .FileURI}}`
+	defaultFileStatusFormat = `{{name .FileURI}}{{with .Locale}}_{{.}}{{end}}{{ext .FileURI}}`
+	defaultFilePullFormat   = `{{name .FileURI}}{{with .Locale}}_{{.}}{{end}}{{ext .FileURI}}`
 )
 
 func main() {
