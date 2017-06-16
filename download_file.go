@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -14,22 +12,39 @@ import (
 func downloadFile(
 	client *smartling.Client,
 	project string,
-	uri string,
+	file smartling.File,
 	locale string,
 	path string,
 ) error {
-	request := smartling.FileDownloadRequest{}
-	request.FileURI = uri
+	var (
+		reader io.Reader
+		err    error
+	)
 
-	reader, err := client.DownloadFile(project, locale, request)
-	if err != nil {
-		return hierr.Errorf(
-			err,
-			`unable to download file "%s" from project "%s" (locale "%s")`,
-			uri,
-			project,
-			locale,
-		)
+	if locale == "" {
+		reader, err = client.DownloadFile(project, file.FileURI)
+		if err != nil {
+			return hierr.Errorf(
+				err,
+				`unable to download original file "%s" from project "%s"`,
+				file.FileURI,
+				project,
+			)
+		}
+	} else {
+		request := smartling.FileDownloadRequest{}
+		request.FileURI = file.FileURI
+
+		reader, err = client.DownloadTranslation(project, locale, request)
+		if err != nil {
+			return hierr.Errorf(
+				err,
+				`unable to download file "%s" from project "%s" (locale "%s")`,
+				file.FileURI,
+				project,
+				locale,
+			)
+		}
 	}
 
 	err = os.MkdirAll(filepath.Dir(path), 0755)
@@ -62,56 +77,4 @@ func downloadFile(
 	}
 
 	return nil
-}
-
-func downloadAllFileLocales(
-	client *smartling.Client,
-	project string,
-	file smartling.File,
-	format *Format,
-	directory string,
-) error {
-	status, err := client.GetFileStatus(project, file.FileURI)
-	if err != nil {
-		return hierr.Errorf(
-			err,
-			`unable to retrieve file "%s" locales from project "%s"`,
-			file.FileURI,
-			project,
-		)
-	}
-
-	for _, locale := range status.Items {
-		buffer := &bytes.Buffer{}
-
-		data := map[string]interface{}{
-			"FileURI": file.FileURI,
-			"Locale":  locale.LocaleID,
-		}
-
-		err = format.Execute(buffer, data)
-		if err != nil {
-			return FormatExecutionError{
-				Cause: err,
-				Data:  file,
-			}
-		}
-
-		path := filepath.Join(directory, buffer.String())
-
-		err = downloadFile(
-			client,
-			project,
-			file.FileURI,
-			locale.LocaleID,
-			path,
-		)
-		if err != nil {
-			return err
-		}
-
-		fmt.Printf("downloaded %s\n", path)
-	}
-
-	return err
 }

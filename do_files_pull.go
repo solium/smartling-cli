@@ -13,6 +13,7 @@ func doFilesPull(
 		directory = args["--directory"].(string)
 		project   = args["--project"].(string)
 		uri, _    = args["<uri>"].(string)
+		source    = args["--source"].(bool)
 	)
 
 	if args["--format"] == nil {
@@ -35,13 +36,18 @@ func doFilesPull(
 		// func closure required to pass different file objects to goroutines
 		func(file smartling.File) {
 			pool.Do(func() {
-				downloadAllFileLocales(
+				err := downloadFileTranslations(
 					client,
 					project,
 					file,
 					format,
 					directory,
+					source,
 				)
+
+				if err != nil {
+					logger.Error(err)
+				}
 			})
 		}(file)
 	}

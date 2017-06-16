@@ -21,8 +21,8 @@ Usage:
   smartling -h | --help
   smartling [options] [-v]... projects list
   smartling [options] [-v]... projects info
-  smartling [options] [-v]... files list [-s] [--format=] [<uri>]
-  smartling [options] [-v]... files pull [-l=] [-d=] [<uri>]
+  smartling [options] [-v]... files list [--format=] [<uri>]
+  smartling [options] [-v]... files pull [-l=] [-d=] [--source] [<uri>]
   smartling [options] [-v]... files status [--format=] [<uri>]
 
 All <uri> arguments support globbing with following patterns:
@@ -46,6 +46,7 @@ Commands:
     --format <format>      Specifies format to use for file list output.
                             [default: $FILE_LIST_FORMAT]
    pull <uri>              Pulls specified files from server.
+    --source               Pulls source file as well.
     -d --directory <dir>   Download all files to specified directory.
     --format <format>      Can be used to format path to downloaded files.
                             Note, that single file can be translated in
@@ -87,7 +88,7 @@ var (
 const (
 	defaultFilesListFormat  = `{{.FileURI}}\t{{.LastUploaded}}\t{{.FileType}}\n`
 	defaultFileStatusFormat = `{{.FileURI}}\t{{.Locale}}\t{{.Status}}\t{{.Progress}}\n`
-	defaultFilePullFormat   = `{{name .FileURI}}@{{.Locale}}{{ext .FileURI}}`
+	defaultFilePullFormat   = `{{name .FileURI}}{{with .Locale}}@{{.}}{{end}}{{ext .FileURI}}`
 )
 
 func main() {
