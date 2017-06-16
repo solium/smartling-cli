@@ -10,12 +10,22 @@ import (
 
 func downloadFileTranslations(
 	client *smartling.Client,
-	project string,
+	config Config,
+	args map[string]interface{},
 	file smartling.File,
-	format *Format,
-	directory string,
-	original bool,
 ) error {
+	var (
+		project   = args["--project"].(string)
+		directory = args["--directory"].(string)
+		source    = args["--source"].(bool)
+
+		defaultFormat, _ = args["--format"].(string)
+	)
+
+	if defaultFormat == "" {
+		defaultFormat = defaultFileStatusFormat
+	}
+
 	status, err := client.GetFileStatus(project, file.FileURI)
 	if err != nil {
 		return hierr.Errorf(
@@ -28,14 +38,18 @@ func downloadFileTranslations(
 
 	translations := status.Items
 
-	if original {
+	if source {
 		translations = append(translations, smartling.FileStatusTranslation{
 			LocaleID: "",
 		})
 	}
 
 	for _, locale := range translations {
-		path, err := format.Execute(
+		path, err := executeFileFormat(
+			config,
+			file,
+			defaultFormat,
+			usePullFormat,
 			map[string]interface{}{
 				"FileURI": file.FileURI,
 				"Locale":  locale.LocaleID,

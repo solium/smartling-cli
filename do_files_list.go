@@ -24,7 +24,7 @@ func doFilesList(
 		args["--format"] = defaultFilesListFormat
 	}
 
-	format, err := CompileFormatOption(args)
+	format, err := compileFormat(args["--format"].(string))
 	if err != nil {
 		return err
 	}

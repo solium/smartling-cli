@@ -10,19 +10,12 @@ func doFilesPull(
 	args map[string]interface{},
 ) error {
 	var (
-		directory = args["--directory"].(string)
-		project   = args["--project"].(string)
-		uri, _    = args["<uri>"].(string)
-		source    = args["--source"].(bool)
+		project = args["--project"].(string)
+		uri, _  = args["<uri>"].(string)
 	)
 
 	if args["--format"] == nil {
 		args["--format"] = defaultFilePullFormat
-	}
-
-	format, err := CompileFormatOption(args)
-	if err != nil {
-		return err
 	}
 
 	files, err := globFiles(client, project, uri)
@@ -36,14 +29,7 @@ func doFilesPull(
 		// func closure required to pass different file objects to goroutines
 		func(file smartling.File) {
 			pool.Do(func() {
-				err := downloadFileTranslations(
-					client,
-					project,
-					file,
-					format,
-					directory,
-					source,
-				)
+				err := downloadFileTranslations(client, config, args, file)
 
 				if err != nil {
 					logger.Error(err)

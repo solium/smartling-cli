@@ -18,13 +18,15 @@ func doFilesStatus(
 		project   = args["--project"].(string)
 		uri, _    = args["<uri>"].(string)
 		directory = args["--directory"].(string)
+
+		defaultFormat, _ = args["--format"].(string)
 	)
 
-	if args["--format"] == nil {
-		args["--format"] = defaultFileStatusFormat
+	if defaultFormat == "" {
+		defaultFormat = defaultFileStatusFormat
 	}
 
-	format, err := CompileFormatOption(args)
+	info, err := client.GetProjectDetails(project)
 	if err != nil {
 		return err
 	}
@@ -34,68 +36,73 @@ func doFilesStatus(
 		return err
 	}
 
-	var (
-		table = NewTableWriter(os.Stdout)
-	)
+	var table = NewTableWriter(os.Stdout)
 
 	for _, file := range files {
-		path, err := format.Execute(map[string]interface{}{
-			"FileURI": file.FileURI,
-		})
-		if err != nil {
-			return err
-		}
-
 		status, err := client.GetFileStatus(project, file.FileURI)
 		if err != nil {
 			return err
 		}
 
-		path = filepath.Join(directory, path)
+		translations := status.Items
 
-		state := "source"
-		if !isFileExists(path) {
-			state = "missing"
-		}
+		translations = append(
+			[]smartling.FileStatusTranslation{
+				{
+					CompletedStringCount: status.TotalStringCount,
+					CompletedWordCount:   status.TotalWordCount,
+				},
+			},
+			translations...,
+		)
 
-		writeFileStatus(table, map[string]string{
-			"Path":     path,
-			"State":    state,
-			"Progress": "source",
-			"Strings":  fmt.Sprint(status.TotalStringCount),
-			"Words":    fmt.Sprint(status.TotalWordCount),
-		})
-
-		for _, locale := range status.Items {
-			path, err := format.Execute(map[string]interface{}{
-				"FileURI": file.FileURI,
-				"Locale":  locale.LocaleID,
-			})
+		for _, translation := range translations {
+			path, err := executeFileFormat(
+				config,
+				file,
+				defaultFormat,
+				usePullFormat,
+				map[string]interface{}{
+					"FileURI": file.FileURI,
+					"Locale":  translation.LocaleID,
+				},
+			)
 			if err != nil {
 				return err
 			}
 
 			path = filepath.Join(directory, path)
 
-			state := "remote"
+			var (
+				locale   = info.SourceLocaleID
+				state    = "source"
+				progress = "source"
+			)
+
+			if translation.LocaleID != "" {
+				locale = translation.LocaleID
+				state = "remote"
+				progress = fmt.Sprintf(
+					"%d%%",
+					int(
+						100*
+							float64(translation.CompletedStringCount)/
+							float64(status.TotalStringCount),
+					),
+				)
+			}
+
 			if !isFileExists(path) {
 				state = "missing"
 			}
 
 			writeFileStatus(table, map[string]string{
-				"Path":   path,
-				"Locale": locale.LocaleID,
-				"State":  state,
-				"Progress": fmt.Sprintf(
-					"%d%%",
-					int(
-						100*
-							float64(locale.CompletedStringCount)/
-							float64(status.TotalStringCount),
-					),
-				),
-				"Strings": fmt.Sprint(locale.CompletedStringCount),
-				"Words":   fmt.Sprint(locale.CompletedWordCount),
+				"Path":     path,
+				"Locale":   locale,
+				"State":    state,
+				"Progress": progress,
+				"Strings":  fmt.Sprint(translation.CompletedStringCount),
+				"Words":    fmt.Sprint(translation.CompletedWordCount),
 			})
 		}
 	}
