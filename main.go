@@ -22,7 +22,7 @@ Usage:
   smartling [options] [-v]... projects list
   smartling [options] [-v]... projects info
   smartling [options] [-v]... files list [--format=] [<uri>]
-  smartling [options] [-v]... files pull [-l=] [-d=] [--source] [<uri>]
+  smartling [options] [-v]... files pull [-l=]... [-d=] [--source] [<uri>]
   smartling [options] [-v]... files status [-d=] [--format=] [<uri>]
 
 All <uri> arguments support globbing with following patterns:

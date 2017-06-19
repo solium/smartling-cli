@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	smartling "github.com/Smartling/api-sdk-go"
 	hierr "github.com/reconquest/hierr-go"
@@ -18,6 +19,7 @@ func downloadFileTranslations(
 		project   = args["--project"].(string)
 		directory = args["--directory"].(string)
 		source    = args["--source"].(bool)
+		locales   = args["--locale"].([]string)
 
 		defaultFormat, _ = args["--format"].(string)
 	)
@@ -45,6 +47,12 @@ func downloadFileTranslations(
 	}
 
 	for _, locale := range translations {
+		if len(locales) > 0 {
+			if !hasLocaleInList(locale.LocaleID, locales) {
+				continue
+			}
+		}
+
 		path, err := executeFileFormat(
 			config,
 			file,
@@ -70,4 +78,14 @@ func downloadFileTranslations(
 	}
 
 	return err
+}
+
+func hasLocaleInList(locale string, locales []string) bool {
+	for _, filter := range locales {
+		if strings.ToLower(filter) == strings.ToLower(locale) {
+			return true
+		}
+	}
+
+	return false
 }
