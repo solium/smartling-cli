@@ -1,0 +1,67 @@
+package main
+
+import (
+	"fmt"
+	"io"
+	"os"
+
+	"github.com/Smartling/api-sdk-go"
+	hierr "github.com/reconquest/hierr-go"
+)
+
+func doProjectsLocales(
+	client *smartling.Client,
+	config Config,
+	args map[string]interface{},
+) error {
+	var (
+		project  = args["--project"].(string)
+		short, _ = args["--short"].(bool)
+	)
+
+	if args["--format"] == nil {
+		args["--format"] = defaultProjectsLocalesFormat
+	}
+
+	format, err := compileFormat(args["--format"].(string))
+	if err != nil {
+		return err
+	}
+
+	details, err := client.GetProjectDetails(project)
+	if err != nil {
+		return hierr.Errorf(
+			err,
+			`unable to get project "%s" details`,
+			project,
+		)
+	}
+
+	table := NewTableWriter(os.Stdout)
+
+	for _, locale := range details.TargetLocales {
+		if short {
+			fmt.Fprintf(table, "%s\n", locale.LocaleID)
+		} else {
+			row, err := format.Execute(locale)
+			if err != nil {
+				return err
+			}
+
+			_, err = io.WriteString(table, row)
+			if err != nil {
+				return hierr.Errorf(
+					err,
+					"unable to write row to output table",
+				)
+			}
+		}
+	}
+
+	err = RenderTable(table)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -20,7 +20,8 @@ TBD.
 Usage:
   smartling -h | --help
   smartling [options] [-v]... projects list
-  smartling [options] [-v]... projects info
+  smartling [options] [-v]... projects info -p=<project>
+  smartling [options] [-v]... projects locales -p=<project>
   smartling [options] [-v]... files list [--format=] [<uri>]
   smartling [options] [-v]... files pull [-l=]... [-d=] [--source] [<uri>]
   smartling [options] [-v]... files push <file> [<uri>] [(-z|-l=...)] [-b=] [-t=]
@@ -38,7 +39,11 @@ Commands:
   projects                 Used to access various project sub-commands.
    list                    Lists projects for current account.
    info                    Get project details about specific project.
-  files                     Used to access various files sub-commands.
+   locales                 Display list of target locales.
+    -s --short             Display only target locale IDs.
+    --format <format>      Use specified format for listing locales.
+                            [format: $PROJECTS_LOCALES_FORMAT]
+  files                    Used to access various files sub-commands.
    status <uri>            Shows file translation status.
     --format <format>      Specifies format to use for file status output.
                             [default: $FILE_STATUS_FORMAT]
@@ -99,9 +104,10 @@ var (
 )
 
 const (
-	defaultFilesListFormat  = `{{.FileURI}}\t{{.LastUploaded}}\t{{.FileType}}\n`
-	defaultFileStatusFormat = `{{name .FileURI}}{{with .Locale}}_{{.}}{{end}}{{ext .FileURI}}`
-	defaultFilePullFormat   = `{{name .FileURI}}{{with .Locale}}_{{.}}{{end}}{{ext .FileURI}}`
+	defaultProjectsLocalesFormat = `{{.LocaleID}}\t{{.Description}}\t{{.Enabled}}\n`
+	defaultFilesListFormat       = `{{.FileURI}}\t{{.LastUploaded}}\t{{.FileType}}\n`
+	defaultFileStatusFormat      = `{{name .FileURI}}{{with .Locale}}_{{.}}{{end}}{{ext .FileURI}}`
+	defaultFilePullFormat        = `{{name .FileURI}}{{with .Locale}}_{{.}}{{end}}{{ext .FileURI}}`
 )
 
 func main() {
@@ -114,6 +120,9 @@ func main() {
 			return defaultFilePullFormat
 
 		case "FILE_STATUS_FORMAT":
+			return defaultFileStatusFormat
+
+		case "PROJECTS_LOCALES_FORMAT":
 			return defaultFileStatusFormat
 		}
 
@@ -260,6 +269,10 @@ func projects(config Config, args map[string]interface{}) error {
 
 	case args["info"].(bool):
 		return doProjectsInfo(client, config, args)
+
+	case args["locales"].(bool):
+		return doProjectsLocales(client, config, args)
+
 	}
 
 	return nil
