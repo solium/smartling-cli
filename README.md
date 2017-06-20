@@ -4,6 +4,46 @@ A CLI interface for the [Smartling Translation API](help.smartling.com/v1.0/refe
 
 # Example usages
 
+## Listing project locales
+
+### Listing all target locales
+
+Display all target project locales along with their description.
+
+```
+smartling projects locales -p <project-id>
+```
+
+### Listing only locale IDs
+
+Display short form of locales list.
+
+```
+smartling projects locales -p <project-id> -s
+```
+
+### Display only source locale
+
+```
+smartling projects locales -p <project-id> --source
+```
+
+### Display only source locale ID
+
+Display short form of source locale.
+
+```
+smartling projects locales -p <project-id> --source -s
+```
+
+### Display only enabled target locales
+
+Dislay only enable locales using extended output formatting.
+
+```
+smartling projects locales -p <project-id> --format='{{if .Enabled}}{{.LocaleID}}{{end}}\n'
+```
+
 ## Uploading files
 
 ### Simplest one-file upload

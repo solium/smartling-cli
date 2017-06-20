@@ -15,8 +15,9 @@ func doProjectsLocales(
 	args map[string]interface{},
 ) error {
 	var (
-		project  = args["--project"].(string)
-		short, _ = args["--short"].(bool)
+		project   = args["--project"].(string)
+		short, _  = args["--short"].(bool)
+		source, _ = args["--source"].(bool)
 	)
 
 	if args["--format"] == nil {
@@ -39,21 +40,34 @@ func doProjectsLocales(
 
 	table := NewTableWriter(os.Stdout)
 
-	for _, locale := range details.TargetLocales {
+	if source {
 		if short {
-			fmt.Fprintf(table, "%s\n", locale.LocaleID)
+			fmt.Fprintf(table, "%s\n", details.SourceLocaleID)
 		} else {
-			row, err := format.Execute(locale)
-			if err != nil {
-				return err
-			}
+			fmt.Fprintf(
+				table,
+				"%s\t%s\n",
+				details.SourceLocaleID,
+				details.SourceLocaleDescription,
+			)
+		}
+	} else {
+		for _, locale := range details.TargetLocales {
+			if short {
+				fmt.Fprintf(table, "%s\n", locale.LocaleID)
+			} else {
+				row, err := format.Execute(locale)
+				if err != nil {
+					return err
+				}
 
-			_, err = io.WriteString(table, row)
-			if err != nil {
-				return hierr.Errorf(
-					err,
-					"unable to write row to output table",
-				)
+				_, err = io.WriteString(table, row)
+				if err != nil {
+					return hierr.Errorf(
+						err,
+						"unable to write row to output table",
+					)
+				}
 			}
 		}
 	}

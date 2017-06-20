@@ -21,7 +21,7 @@ Usage:
   smartling -h | --help
   smartling [options] [-v]... projects list
   smartling [options] [-v]... projects info -p=<project>
-  smartling [options] [-v]... projects locales -p=<project>
+  smartling [options] [-v]... projects locales -p=<project> [--source] [--format=]
   smartling [options] [-v]... files list [--format=] [<uri>]
   smartling [options] [-v]... files pull [-l=]... [-d=] [--source] [<uri>]
   smartling [options] [-v]... files push <file> [<uri>] [(-z|-l=...)] [-b=] [-t=]
