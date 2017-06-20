@@ -31,7 +31,7 @@ func doFilesStatus(
 		return err
 	}
 
-	files, err := globFiles(client, project, uri)
+	files, err := globFilesRemote(client, project, uri)
 	if err != nil {
 		return err
 	}

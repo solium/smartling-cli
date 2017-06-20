@@ -23,6 +23,7 @@ Usage:
   smartling [options] [-v]... projects info
   smartling [options] [-v]... files list [--format=] [<uri>]
   smartling [options] [-v]... files pull [-l=]... [-d=] [--source] [<uri>]
+  smartling [options] [-v]... files push <file> [<uri>] [(-z|-l=...)] [-b=] [-t=]
   smartling [options] [-v]... files status [-d=] [--format=] [<uri>]
 
 All <uri> arguments support globbing with following patterns:
@@ -53,6 +54,14 @@ Commands:
                             different locales, so format should include locale
                             to create several file paths.
                             [default: $FILE_PULL_FORMAT]
+   push <file> <uri>       Uploads specified file into Smartling platform.
+    -z --authorize         Automatically authorize all locales in specified
+                            file. Incompatible with -l option.
+    -l --locale <locale>   Authorize only specified locales.
+    -b --branch <branch>   Prepend specified text to the file uri.
+    -t --type <type>       Specifies file type which will be used instead of
+                            automatically deduced from extension.
+
 
 Options:
   -h --help               Show this help.
@@ -72,6 +81,10 @@ Options:
                            command.
   -d --directory <dir>    Sets directory to operate on, usually, to store or to
                            read files.  Depends on command.  [default: .]
+  -z --authorize          Authorize all locales while pushing file.
+                           Incompatible with -l option.
+  -b --branch <branch>    Prepend specified value to the file URI.
+  -t --type <type>        Specify file type. Depends on command.
   --threads <number>      If command can be executed concurrently, it will be
                            executed for at most <number> of threads.
                            [default: 4]
@@ -263,6 +276,9 @@ func files(config Config, args map[string]interface{}) error {
 
 	case args["pull"].(bool):
 		return doFilesPull(client, config, args)
+
+	case args["push"].(bool):
+		return doFilesPush(client, config, args)
 
 	case args["status"].(bool):
 		return doFilesStatus(client, config, args)

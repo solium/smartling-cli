@@ -18,7 +18,7 @@ func doFilesPull(
 		args["--format"] = defaultFilePullFormat
 	}
 
-	files, err := globFiles(client, project, uri)
+	files, err := globFilesRemote(client, project, uri)
 	if err != nil {
 		return err
 	}
