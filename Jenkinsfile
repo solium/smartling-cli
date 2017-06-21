@@ -8,7 +8,7 @@ pipeline {
             steps {
                 sh "docker pull golang"
                 sh "docker run -t --rm -v ${WORKSPACE}:/go/src/cli -w /go/src/cli golang make || exit 0"
-                s3Upload(file:'./bin', bucket:'smartling-connectors-releases', path:'cli/')
+                sh "aws-profile connectors-staging aws s3 cp ./bin s3://smartling-connectors-releases/cli/ --recursive --acl public-read"
             }
         }
     }
