@@ -19,13 +19,13 @@ Add --help option to command to get detailed help for specific command.
 
 Usage:
   smartling [options] [-v]... init [--dry-run]
-  smartling [options] [-v]... projects list [-s]
-  smartling [options] [-v]... projects info [-p=]
-  smartling [options] [-v]... projects locales [-p=] [--source] [--format=]
+  smartling [options] [-v]... projects list [--short]
+  smartling [options] [-v]... projects info
+  smartling [options] [-v]... projects locales [--source] [--format=]
   smartling [options] [-v]... files list [--format=] [<uri>]
-  smartling [options] [-v]... files pull [-l=]... [-d=] [--source] [<uri>]
-  smartling [options] [-v]... files push <file> [<uri>] [(-z|-l=...)] [-b=] [-t=]
-  smartling [options] [-v]... files status [-d=] [--format=] [<uri>]
+  smartling [options] [-v]... files pull [--locale=]... [--directory=] [--source] [<uri>]
+  smartling [options] [-v]... files push <file> [<uri>] [(--authorize|--locale=...)] [--branch=] [--type=]
+  smartling [options] [-v]... files status [--directory=] [--format=] [<uri>]
   smartling [options]
 
 All <uri> arguments support globbing with following patterns:
