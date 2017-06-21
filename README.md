@@ -4,31 +4,30 @@ A CLI interface for the [Smartling Translation API](https://help.smartling.com/v
 
 # Installation
 
-Windows
-```
-curl --output cli.exe https://smartling-connectors-releases.s3.amazonaws.com/cli/smartling.windows.exe
-```
-Mac OS
-```
-curl --output cli https://smartling-connectors-releases.s3.amazonaws.com/cli/smartling.darwin
-sudo chmod +x cli
-sudo mv cli /usr/local/bin/
-```
-Linux
-```
-curl --output cli https://smartling-connectors-releases.s3.amazonaws.com/cli/smartling.linux
-sudo chmod +x cli
-sudo mv cli /usr/local/bin/
-```
-
-# Installation
-
+### From sources
 ```
 go get github.com/Smartling/smartling-cli
 ```
 
 An executable named `smartling-cli` should become available in your
 `$GOPATH/bin`.
+
+### Windows
+```
+curl --output smartling-cli.exe https://smartling-connectors-releases.s3.amazonaws.com/cli/smartling.windows.exe
+```
+### Mac OS
+```
+curl --output smartling-cli https://smartling-connectors-releases.s3.amazonaws.com/cli/smartling.darwin
+sudo chmod +x smartling-cli
+sudo mv smartling-cli /usr/local/bin/
+```
+### Linux
+```
+curl --output smartling-cli https://smartling-connectors-releases.s3.amazonaws.com/cli/smartling.linux
+sudo chmod +x smartling-cli
+sudo mv smartling-cli /usr/local/bin/
+```
 
 # Initial configuration
 
