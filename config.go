@@ -6,26 +6,26 @@ import (
 	"github.com/gobwas/glob"
 	"github.com/imdario/mergo"
 	"github.com/kovetskiy/ko"
-	hierr "github.com/reconquest/hierr-go"
-	yaml "gopkg.in/yaml.v2"
+	"github.com/reconquest/hierr-go"
+	"gopkg.in/yaml.v2"
 )
 
 type FileConfig struct {
 	Pull struct {
-		Format string
-	}
+		Format string `yaml:"format,omitempty"`
+	} `yaml:"pull,omitempty"`
 
 	Push struct {
-		Type       string
-		Directives map[string]string
-	}
+		Type       string            `yaml:"type,omitempty"`
+		Directives map[string]string `yaml:"directives,omitempty,flow"`
+	} `yaml:"push,omitempty"`
 }
 
 type Config struct {
 	UserID    string `yaml:"user_id",required:"true"`
 	Secret    string `yaml:"secret",required:"true"`
 	AccountID string `yaml:"account_id"`
-	ProjectID string `yaml:"project_id"`
+	ProjectID string `yaml:"project_id,omitempty"`
 	Threads   int    `yaml:"threads"`
 
 	Files map[string]FileConfig `yaml:"files"`

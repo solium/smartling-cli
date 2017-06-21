@@ -19,6 +19,7 @@ TBD.
 
 Usage:
   smartling -h | --help
+  smartling [options] [-v]... init [--dry-run]
   smartling [options] [-v]... projects list
   smartling [options] [-v]... projects info -p=<project>
   smartling [options] [-v]... projects locales -p=<project> [--source] [--format=]
@@ -36,6 +37,11 @@ All <uri> arguments support globbing with following patterns:
   > {a,b,c} — matches alternatives a, b or c;
 
 Commands:
+  init                     Prepares project to work with Smartling,
+                            essentially, assisting user in creating
+                            configuration file.
+   --dry-run               Do not actually write file, just output it
+                            on stdout.
   projects                 Used to access various project sub-commands.
    list                    Lists projects for current account.
    info                    Get project details about specific project.
@@ -90,6 +96,7 @@ Options:
                            Incompatible with -l option.
   -b --branch <branch>    Prepend specified value to the file URI.
   -t --type <type>        Specify file type. Depends on command.
+  --dry-run               Do not actually perform action, just log it.
   --threads <number>      If command can be executed concurrently, it will be
                            executed for at most <number> of threads.
                            [default: 4]
@@ -153,11 +160,14 @@ func main() {
 	logger.SetIndentLines(true)
 
 	switch {
+	case args["init"].(bool):
+		err = doInit(config, args)
+
 	case args["projects"].(bool):
-		err = projects(config, args)
+		err = doProjects(config, args)
 
 	case args["files"].(bool):
-		err = files(config, args)
+		err = doFiles(config, args)
 	}
 
 	if err != nil {
@@ -172,7 +182,7 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 	if err != nil {
 		return config, NewError(
 			hierr.Errorf(err, `failed to load configuration file "%s".`, path),
-			`Check configuretion file contents according to documentation.`,
+			`Check configuration file contents according to documentation.`,
 		)
 	}
 
@@ -192,21 +202,23 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 		config.ProjectID = args["--project"].(string)
 	}
 
-	if config.UserID == "" {
-		return config, MissingConfigValueError{
-			ConfigPath: config.path,
-			ValueName:  "user ID",
-			OptionName: "user",
-			KeyName:    "user_id",
+	if !args["init"].(bool) {
+		if config.UserID == "" {
+			return config, MissingConfigValueError{
+				ConfigPath: config.path,
+				ValueName:  "user ID",
+				OptionName: "user",
+				KeyName:    "user_id",
+			}
 		}
-	}
 
-	if config.Secret == "" {
-		return config, MissingConfigValueError{
-			ConfigPath: config.path,
-			ValueName:  "token secret",
-			OptionName: "secret",
-			KeyName:    "secret",
+		if config.Secret == "" {
+			return config, MissingConfigValueError{
+				ConfigPath: config.path,
+				ValueName:  "token secret",
+				OptionName: "secret",
+				KeyName:    "secret",
+			}
 		}
 	}
 
@@ -246,7 +258,7 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 	return config, nil
 }
 
-func projects(config Config, args map[string]interface{}) error {
+func doProjects(config Config, args map[string]interface{}) error {
 	client := smartling.NewClient(config.UserID, config.Secret)
 
 	setLogger(client, logger, args["--verbose"].(int))
@@ -278,7 +290,7 @@ func projects(config Config, args map[string]interface{}) error {
 	return nil
 }
 
-func files(config Config, args map[string]interface{}) error {
+func doFiles(config Config, args map[string]interface{}) error {
 	client := smartling.NewClient(config.UserID, config.Secret)
 
 	setLogger(client, logger, args["--verbose"].(int))

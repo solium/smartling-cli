@@ -2,6 +2,24 @@
 
 A CLI interface for the [Smartling Translation API](help.smartling.com/v1.0/reference) in Go.
 
+# Installation
+
+```
+go get github.com/Smartling/smartling-cli
+```
+
+An executable named `smartling-cli` should become available in your
+`$GOPATH/bin`.
+
+# Initial configuration
+
+First of all, you need to create config file with authentication parameters
+for your project. To ease process, there is `init` command:
+
+```
+smartling init
+```
+
 # Example usages
 
 ## Listing project locales
