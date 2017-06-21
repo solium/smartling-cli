@@ -1,6 +1,25 @@
 # Smartling
 
-A CLI interface for the [Smartling Translation API](help.smartling.com/v1.0/reference) in Go.
+A CLI interface for the [Smartling Translation API](https://help.smartling.com/v1.0/reference) in Go.
+
+# Installation
+
+Windows
+```
+curl --output cli.exe https://smartling-connectors-releases.s3.amazonaws.com/cli/smartling.windows.exe
+```
+Mac OS
+```
+curl --output cli https://smartling-connectors-releases.s3.amazonaws.com/cli/smartling.darwin
+sudo chmod +x cli
+sudo mv cli /usr/local/bin/
+```
+Linux
+```
+curl --output cli https://smartling-connectors-releases.s3.amazonaws.com/cli/smartling.linux
+sudo chmod +x cli
+sudo mv cli /usr/local/bin/
+```
 
 # Installation
 
@@ -127,4 +146,3 @@ files:
         push:
             type: "plaintext"
 ```
-
