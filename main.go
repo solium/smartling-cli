@@ -233,15 +233,15 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 	}
 
 	switch {
-	case args["files"].(bool):
-		fallthrough
-	case args["projects"].(bool) && args["info"].(bool):
-		if config.ProjectID == "" {
-			return config, MissingConfigValueError{
-				ConfigPath: config.path,
-				ValueName:  "project ID",
-				OptionName: "project",
-				KeyName:    "project_id",
+	case args["files"].(bool), args["projects"].(bool):
+		if args["info"].(bool) || args["locales"].(bool) {
+			if config.ProjectID == "" {
+				return config, MissingConfigValueError{
+					ConfigPath: config.path,
+					ValueName:  "project ID",
+					OptionName: "project",
+					KeyName:    "project_id",
+				}
 			}
 		}
 	}
