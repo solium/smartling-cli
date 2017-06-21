@@ -13,6 +13,10 @@ func doProjectsList(
 	config Config,
 	args map[string]interface{},
 ) error {
+	var (
+		short = args["--short"].(bool)
+	)
+
 	projects, err := client.ListProjects(
 		config.AccountID,
 		smartling.ProjectsListRequest{},
@@ -27,13 +31,17 @@ func doProjectsList(
 	table := NewTableWriter(os.Stdout)
 
 	for _, project := range projects.Items {
-		fmt.Fprintf(
-			table,
-			"%s\t%s\t%s\n",
-			project.ProjectID,
-			project.ProjectName,
-			project.SourceLocaleID,
-		)
+		if short {
+			fmt.Fprintln(table, project.ProjectID)
+		} else {
+			fmt.Fprintf(
+				table,
+				"%s\t%s\t%s\n",
+				project.ProjectID,
+				project.ProjectName,
+				project.SourceLocaleID,
+			)
+		}
 	}
 
 	err = RenderTable(table)
