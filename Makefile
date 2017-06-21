@@ -1,4 +1,5 @@
 all: clean get build
+	@
 
 get:
 	go get
