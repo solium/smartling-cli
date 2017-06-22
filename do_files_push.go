@@ -15,7 +15,7 @@ func doFilesPush(
 	args map[string]interface{},
 ) error {
 	var (
-		project     = args["--project"].(string)
+		project     = config.ProjectID
 		file        = args["<file>"].(string)
 		uri, useURI = args["<uri>"].(string)
 		branch, _   = args["--branch"].(string)

@@ -40,7 +40,10 @@ func compileFormat(definition string) (*Format, error) {
 		err    error
 	)
 
-	format.Template, err = template.New("format").Funcs(funcs).Parse(
+	format.Source = definition
+	format.Template, err = template.New("format").Funcs(funcs).Option(
+		"missingkey=error",
+	).Parse(
 		definition,
 	)
 	if err != nil {

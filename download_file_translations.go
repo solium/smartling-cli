@@ -16,7 +16,7 @@ func downloadFileTranslations(
 	file smartling.File,
 ) error {
 	var (
-		project   = args["--project"].(string)
+		project   = config.ProjectID
 		directory = args["--directory"].(string)
 		source    = args["--source"].(bool)
 		locales   = args["--locale"].([]string)

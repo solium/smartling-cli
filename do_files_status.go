@@ -15,7 +15,7 @@ func doFilesStatus(
 	args map[string]interface{},
 ) error {
 	var (
-		project   = args["--project"].(string)
+		project   = config.ProjectID
 		uri, _    = args["<uri>"].(string)
 		directory = args["--directory"].(string)
 

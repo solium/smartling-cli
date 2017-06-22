@@ -15,8 +15,8 @@ func doFilesList(
 	args map[string]interface{},
 ) error {
 	var (
+		project = config.ProjectID
 		short   = args["--short"].(bool)
-		project = args["--project"].(string)
 		uri, _  = args["<uri>"].(string)
 	)
 

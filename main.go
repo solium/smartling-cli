@@ -18,23 +18,23 @@ var usage = `smartling - manage translation files using Smartling.
 Add --help option to command to get detailed help for specific command.
 
 Usage:
+  smartling [options] [-v]... init --help
   smartling [options] [-v]... init [--dry-run]
+  smartling [options] [-v]... projects list --help
   smartling [options] [-v]... projects list [--short]
+  smartling [options] [-v]... projects info --help
   smartling [options] [-v]... projects info
+  smartling [options] [-v]... projects locales --help
   smartling [options] [-v]... projects locales [--source] [--format=]
-  smartling [options] [-v]... files list [--format=] [<uri>]
-  smartling [options] [-v]... files pull [--locale=]... [--directory=] [--source] [<uri>]
+  smartling [options] [-v]... files list --help
+  smartling [options] [-v]... files list [--format=] [--short] [<uri>]
+  smartling [options] [-v]... files pull --help
+  smartling [options] [-v]... files pull [--locale=]... [--directory=] [--source] [--format=] [<uri>]
+  smartling [options] [-v]... files push --help
   smartling [options] [-v]... files push <file> [<uri>] [(--authorize|--locale=...)] [--branch=] [--type=]
+  smartling [options] [-v]... files status --help
   smartling [options] [-v]... files status [--directory=] [--format=] [<uri>]
-  smartling [options]
-
-All <uri> arguments support globbing with following patterns:
-  > ** — matches any number of any chars;
-  > *  — matches any number of chars except '/';
-  > ?  — matches any single char except '/';
-  > [xyz]   — matches 'x', 'y' or 'z' charachers;
-  > [!xyz]  — matches not 'x', 'y' or 'z' charachers;
-  > {a,b,c} — matches alternatives a, b or c;
+  smartling --help
 
 Commands:
   init                    Prepares project to work with Smartling,
@@ -80,13 +80,13 @@ Options:
   -c --config <file>      Config file in YAML format.
                            [default: smartling.yml]
   -p --project <project>  Project ID to operate on.
-                           This option ovverides config value "project_id".
+                           This option overrides config value "project_id".
   -a --account <account>  Account ID to operate on.
-                           This option ovverides config value "account_id".
+                           This option overrides config value "account_id".
   --user <user>           User ID which will be used for authentication.
-                           This option ovverides config value "user_id".
+                           This option overrides config value "user_id".
   --secret <secret>       Token Secret which will be used for authentication.
-                           This option ovverides config value "secret".
+                           This option overrides config value "secret".
   -s --short              Use short list output, usually outputs only first
                            column, e.g. file URI in case of files list.
   -l --locale <locale>    Sets locale to filter by or operate upon. Depends on

@@ -17,8 +17,9 @@ func (format *Format) Execute(data interface{}) (string, error) {
 	err := format.Template.Execute(buffer, data)
 	if err != nil {
 		return "", FormatExecutionError{
-			Cause: err,
-			Data:  data,
+			Cause:  err,
+			Format: format.Source,
+			Data:   data,
 		}
 	}
 
