@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	hierr "github.com/reconquest/hierr-go"
+	"github.com/reconquest/hierr-go"
 
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 )
 
 func doInit(config Config, args map[string]interface{}) error {
@@ -90,14 +90,14 @@ func doInit(config Config, args map[string]interface{}) error {
 		fmt.Println()
 
 		fmt.Println(string(result))
-	}
-
-	err = ioutil.WriteFile(config.path, result, 0644)
-	if err != nil {
-		return hierr.Errorf(
-			err,
-			"unable to write new config file",
-		)
+	} else {
+		err = ioutil.WriteFile(config.path, result, 0644)
+		if err != nil {
+			return hierr.Errorf(
+				err,
+				"unable to write new config file",
+			)
+		}
 	}
 
 	return nil
