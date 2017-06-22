@@ -7,8 +7,8 @@ pipeline {
         stage('Build') {
             steps {
                 sh "docker pull golang"
-                sh "docker run -t --rm -v ${WORKSPACE}:/go/src/cli -w /go/src/cli golang make || exit 0"
-                sh "aws-profile connectors-staging aws s3 cp ./bin s3://smartling-connectors-releases/cli/ --recursive --acl public-read"
+                sh "docker run -t --rm -v ${WORKSPACE}:/go/src/cli -w /go/src/cli golang make"
+                sh "aws-profile connectors-staging aws s3 cp ${WORKSPACE}/bin s3://smartling-connectors-releases/cli/ --recursive --acl public-read"
             }
         }
     }
