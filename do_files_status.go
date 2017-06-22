@@ -82,14 +82,18 @@ func doFilesStatus(
 			if translation.LocaleID != "" {
 				locale = translation.LocaleID
 				state = "remote"
-				progress = fmt.Sprintf(
-					"%d%%",
-					int(
-						100*
-							float64(translation.CompletedStringCount)/
-							float64(status.TotalStringCount),
-					),
-				)
+				if status.TotalStringCount > 0 {
+					progress = fmt.Sprintf(
+						"%d%%",
+						int(
+							100*
+								float64(translation.CompletedStringCount)/
+								float64(status.TotalStringCount),
+						),
+					)
+				} else {
+					progress = "-"
+				}
 			}
 
 			if !isFileExists(path) {
