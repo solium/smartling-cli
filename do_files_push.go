@@ -16,7 +16,7 @@ func doFilesPush(
 ) error {
 	var (
 		project     = config.ProjectID
-		file        = args["<file>"].(string)
+		file, _     = args["<file>"].(string)
 		uri, useURI = args["<uri>"].(string)
 		branch, _   = args["--branch"].(string)
 		locales, _  = args["--locale"].([]string)
@@ -25,16 +25,43 @@ func doFilesPush(
 		fileType, _ = args["--type"].(string)
 	)
 
-	files, err := globFilesLocally(directory, file)
-	if err != nil {
-		return NewError(
-			hierr.Errorf(
-				err,
-				`unable to find matching files to upload`,
-			),
+	patterns := []string{}
 
-			`Check, that specified pattern is valid and refer to help for`+
-				` more information about glob patterns.`,
+	if file != "" {
+		patterns = append(patterns, file)
+	} else {
+		for pattern, section := range config.Files {
+			if section.Push.Type != "" {
+				patterns = append(patterns, pattern)
+			}
+		}
+	}
+
+	files := []string{}
+
+	for _, pattern := range patterns {
+		chunk, err := globFilesLocally(directory, pattern)
+		if err != nil {
+			return NewError(
+				hierr.Errorf(
+					err,
+					`unable to find matching files to upload`,
+				),
+
+				`Check, that specified pattern is valid and refer to help for`+
+					` more information about glob patterns.`,
+			)
+		}
+
+		files = append(files, chunk...)
+	}
+
+	if len(files) == 0 {
+		return NewError(
+			fmt.Errorf(`no files found by specified patterns`),
+
+			`Check command line pattern if any and configuration file for`+
+				` more patterns to search for.`,
 		)
 	}
 

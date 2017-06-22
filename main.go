@@ -31,7 +31,7 @@ Usage:
   smartling [options] [-v]... files pull --help
   smartling [options] [-v]... files pull [--locale=]... [--directory=] [--source] [--format=] [<uri>]
   smartling [options] [-v]... files push --help
-  smartling [options] [-v]... files push <file> [<uri>] [(--authorize|--locale=...)] [--branch=] [--type=]
+  smartling [options] [-v]... files push [<file>] [<uri>] [(--authorize|--locale=...)] [--branch=] [--type=]
   smartling [options] [-v]... files status --help
   smartling [options] [-v]... files status [--directory=] [--format=] [<uri>]
   smartling --help

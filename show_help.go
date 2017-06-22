@@ -201,6 +201,8 @@ One or several files can be pushed.
 
 When pushing single file, <uri> can be specified to override local path.
 When pushing multiple files, they will be uploaded using local path as URI.
+If no file specified in command line, config file will be used to lookup
+for file masks to push.
 
 To authorize all locales, use --authorize option.
 

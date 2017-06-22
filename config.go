@@ -51,7 +51,10 @@ func NewConfig(path string) (Config, error) {
 }
 
 func (config *Config) GetFileConfig(path string) (FileConfig, error) {
-	var match *FileConfig
+	var (
+		match FileConfig
+		found bool
+	)
 
 	for key, candidate := range config.Files {
 		pattern, err := glob.Compile(key, '/')
@@ -69,17 +72,18 @@ func (config *Config) GetFileConfig(path string) (FileConfig, error) {
 		}
 
 		if pattern.Match(path) {
-			match = &candidate
+			match = candidate
+			found = true
 		}
 	}
 
 	defaults := config.Files["default"]
 
-	if match == nil {
+	if !found {
 		return defaults, nil
 	}
 
-	err := mergo.Merge(match, defaults)
+	err := mergo.Merge(&match, defaults)
 	if err != nil {
 		return FileConfig{}, NewError(
 			hierr.Errorf(err, "unable to merge file config options"),
@@ -87,5 +91,5 @@ func (config *Config) GetFileConfig(path string) (FileConfig, error) {
 		)
 	}
 
-	return *match, nil
+	return match, nil
 }
