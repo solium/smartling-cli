@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/Smartling/api-sdk-go"
-	hierr "github.com/reconquest/hierr-go"
+	"github.com/reconquest/hierr-go"
 )
 
 func doProjectsInfo(
@@ -13,14 +13,12 @@ func doProjectsInfo(
 	config Config,
 	args map[string]interface{},
 ) error {
-	project := args["--project"].(string)
-
-	details, err := client.GetProjectDetails(project)
+	details, err := client.GetProjectDetails(config.ProjectID)
 	if err != nil {
 		return hierr.Errorf(
 			err,
 			`unable to get project "%s" details`,
-			project,
+			config.ProjectID,
 		)
 	}
 
