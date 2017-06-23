@@ -111,7 +111,7 @@ smartling files push -p <project-id> README.md --type plaintext
 ### Upload files by mask
 
 Uploads all `txt` files from local directory (and all subdirectories) into
-Smartling. *Note single quotes, it's not shell expansion syntax.`
+Smartling. *Note* single quotes, it's not shell expansion syntax.
 
 ```
 smartling files push -p <project-id> '**.txt'
