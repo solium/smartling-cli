@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	"github.com/Smartling/api-sdk-go"
 	"github.com/reconquest/hierr-go"
@@ -24,6 +25,10 @@ func doFilesPush(
 		directory   = args["--directory"].(string)
 		fileType, _ = args["--type"].(string)
 	)
+
+	if branch != "" {
+		branch = strings.TrimSuffix(branch, "/") + "/"
+	}
 
 	patterns := []string{}
 
