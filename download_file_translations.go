@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	smartling "github.com/Smartling/api-sdk-go"
-	hierr "github.com/reconquest/hierr-go"
+	"github.com/Smartling/api-sdk-go"
+	"github.com/reconquest/hierr-go"
 )
 
 func downloadFileTranslations(
@@ -38,12 +38,14 @@ func downloadFileTranslations(
 		)
 	}
 
-	translations := status.Items
+	var translations []smartling.FileStatusTranslation
 
 	if source {
-		translations = append(translations, smartling.FileStatusTranslation{
-			LocaleID: "",
-		})
+		translations = []smartling.FileStatusTranslation{
+			{LocaleID: ""},
+		}
+	} else {
+		translations = status.Items
 	}
 
 	for _, locale := range translations {
