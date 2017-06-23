@@ -26,6 +26,20 @@ func doFilesPush(
 		fileType, _ = args["--type"].(string)
 	)
 
+	if branch == "@auto" {
+		var err error
+
+		branch, err = getGitBranch()
+		if err != nil {
+			return hierr.Errorf(
+				err,
+				"unable to autodetect branch name",
+			)
+		}
+
+		logger.Infof("autodetected branch name: %s", branch)
+	}
+
 	if branch != "" {
 		branch = strings.TrimSuffix(branch, "/") + "/"
 	}
@@ -165,7 +179,7 @@ func doFilesPush(
 		}
 
 		fmt.Printf(
-			"%s %s [strings %d words %d]\n",
+			"%s %s [%d strings %d words]\n",
 			branch+file,
 			status,
 			response.StringCount,

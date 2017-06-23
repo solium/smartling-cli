@@ -213,7 +213,9 @@ To authorize all locales, use --authorize option.
 
 To authorize only specific locales, use one or more --locale.
 
-To prepend prefix to all target URIs, use --branch option.
+To prepend prefix to all target URIs, use --branch option. Special
+value "@auto" can be used to tell that tool should try to took current git
+branch name as value for --branch option.
 
 File type will be deduced from file extension. If file extension is unknown,
 type should be specified manually by using --type option. That option also
