@@ -162,6 +162,11 @@ It's possible to download only specific files by file mask, to download source
 files with translations, to download file to specific directory or to download
 specific locales only.
 
+If special value of "-" is specified as <uri>, then program will expect
+to read files list from stdin:
+
+  cat files.txt | smartling files pull -
+
 <uri> ` + globPatternHelp + `
 
 If --locale flag is not specified, all available locales are downloaded. To

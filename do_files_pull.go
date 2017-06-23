@@ -1,7 +1,12 @@
 package main
 
 import (
+	"io/ioutil"
+	"os"
+	"strings"
+
 	"github.com/Smartling/api-sdk-go"
+	"github.com/reconquest/hierr-go"
 )
 
 func doFilesPull(
@@ -18,9 +23,34 @@ func doFilesPull(
 		args["--format"] = defaultFilePullFormat
 	}
 
-	files, err := globFilesRemote(client, project, uri)
-	if err != nil {
-		return err
+	var (
+		err   error
+		files []smartling.File
+	)
+
+	if uri == "-" {
+		lines, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			return hierr.Errorf(
+				err,
+				"unable to read stdin",
+			)
+		}
+
+		for _, line := range strings.Split(string(lines), "\n") {
+			if line == "" {
+				continue
+			}
+
+			files = append(files, smartling.File{
+				FileURI: line,
+			})
+		}
+	} else {
+		files, err = globFilesRemote(client, project, uri)
+		if err != nil {
+			return err
+		}
 	}
 
 	pool := NewThreadPool(config.Threads)
