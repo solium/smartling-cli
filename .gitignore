@@ -1,2 +1,5 @@
 /smartling-cli
 /smartling.yml
+/bin
+/pkg
+/*.deb

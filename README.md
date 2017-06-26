@@ -9,6 +9,33 @@ A CLI interface for the [Smartling Translation API](https://help.smartling.com/v
 go get github.com/Smartling/smartling-cli
 ```
 
+# Building package
+
+```
+make <target>
+```
+
+Where target is:
+
+* `deb` for building deb-packages:
+   ```
+   make deb
+   ```
+
+Specific settings can be set in built-time:
+
+*VERSION*:
+
+```
+make VERSION=<version-string> <target>
+```
+
+*MAINTAINER*:
+
+```
+make MAINTAINER=<maintainer> <target>
+```
+
 An executable named `smartling-cli` should become available in your
 `$GOPATH/bin`.
 
