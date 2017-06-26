@@ -34,6 +34,8 @@ Usage:
   smartling [options] [-v]... files push [<file>] [<uri>] [(--authorize|--locale=...)] [--branch=] [--type=]
   smartling [options] [-v]... files status --help
   smartling [options] [-v]... files status [--directory=] [--format=] [<uri>]
+  smartling [options] [-v]... files delete --help
+  smartling [options] [-v]... files delete <uri>
   smartling --help
 
 Commands:
@@ -316,6 +318,8 @@ func doFiles(config Config, args map[string]interface{}) error {
 	case args["status"].(bool):
 		return doFilesStatus(client, config, args)
 
+	case args["delete"].(bool):
+		return doFilesDelete(client, config, args)
 	}
 
 	return nil

@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/Smartling/api-sdk-go"
-	hierr "github.com/reconquest/hierr-go"
+	"github.com/reconquest/hierr-go"
 )
 
 func doProjectsLocales(

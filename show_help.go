@@ -115,6 +115,9 @@ Following variables are available:
 
 
 Available options:
+  -p --project <project>
+    Specify project to use.
+
   -s --short
     List only locale IDs.
 
@@ -147,6 +150,9 @@ Following variables are available:
 
 
 Available options:
+  -p --project <project>
+    Specify project to use.
+
   -s --short
     List only file URIs.
 
@@ -188,6 +194,9 @@ Following variables are available:
 
 
 Available options:
+  -p --project <project>
+    Specify project to use.
+
   --source
     Download source files along with translated files.
 
@@ -225,6 +234,8 @@ can be used to override detected file type.
 
 
 Available options:
+  -p --project <project>
+    Specify project to use.
 
   --authorize
     Authorize all available locales. Incompatible with --locale option.
@@ -272,12 +283,25 @@ Following variables are available:
 
 
 Available options:
+  -p --project <project>
+    Specify project to use.
 
   --directory <directory>
     Check files in specific directory instead of local directory.
 
   --format <format>
     Specify format for listing file names.
+` + authenticationOptionsHelp
+
+const filesDeleteHelp = `smartling files delete — removes files from project.
+
+Removes files from project according to specified pattern.
+
+<uri> ` + globPatternHelp + `
+
+Available options:
+  -p --project <project>
+    Specify project to use.
 ` + authenticationOptionsHelp
 
 func showHelp(args map[string]interface{}) {
@@ -307,6 +331,8 @@ func showHelp(args map[string]interface{}) {
 			fmt.Print(filesPushHelp)
 		case args["status"].(bool):
 			fmt.Print(filesStatusHelp)
+		case args["delete"].(bool):
+			fmt.Print(filesDeleteHelp)
 		}
 
 	default:
