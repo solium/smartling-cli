@@ -25,7 +25,7 @@ Usage:
   smartling [options] [-v]... projects info --help
   smartling [options] [-v]... projects info
   smartling [options] [-v]... projects locales --help
-  smartling [options] [-v]... projects locales [--source] [--format=]
+  smartling [options] [-v]... projects locales [--source] [--short] [--format=]
   smartling [options] [-v]... files list --help
   smartling [options] [-v]... files list [--format=] [--short] [<uri>]
   smartling [options] [-v]... files pull --help
