@@ -299,6 +299,11 @@ Removes files from project according to specified pattern.
 
 <uri> ` + globPatternHelp + `
 
+If special value of "-" is specified as <uri>, then program will expect
+to read files list from stdin:
+
+  cat files.txt | smartling files delete -
+
 Available options:
   -p --project <project>
     Specify project to use.

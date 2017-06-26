@@ -17,9 +17,21 @@ func doFilesDelete(
 		uri     = args["<uri>"].(string)
 	)
 
-	files, err := globFilesRemote(client, project, uri)
-	if err != nil {
-		return err
+	var (
+		err   error
+		files []smartling.File
+	)
+
+	if uri == "-" {
+		files, err = readFilesFromStdin()
+		if err != nil {
+			return err
+		}
+	} else {
+		files, err = globFilesRemote(client, project, uri)
+		if err != nil {
+			return err
+		}
 	}
 
 	if len(files) == 0 {
