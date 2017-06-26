@@ -17,9 +17,14 @@ make <target>
 
 Where target is:
 
-* `deb` for building deb-packages:
+* `deb` for building Debian packages:
    ```
    make deb
+   ```
+
+* `rpm` for building Fedora packages:
+   ```
+   make rpm
    ```
 
 Specific settings can be set in built-time:
