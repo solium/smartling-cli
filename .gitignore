@@ -3,3 +3,6 @@
 /bin
 /pkg
 /*.deb
+.tags
+.tags1
+
