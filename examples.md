@@ -1,4 +1,4 @@
-synchronize# Example usages
+# Example usages
 
 **Table of content**
 
@@ -31,7 +31,7 @@ All examples below assume that you configured credentials, project id and accoun
                          read files.  Depends on command.  [default: .]
 ```
 
-Also would recommend to review template of configuration file [smartling.yml.example](smartling.yml.example). It's very useful in case you have existing "localization project" locally and need to syncronize it with Smartling TMS.
+Also would recommend to review template of configuration file [smartling.yml.example](smartling.yml.example). It's very useful in case you have existing "localization project" locally and need to synchronize it with Smartling TMS.
 
 ## Work with projects
 
@@ -39,10 +39,10 @@ Also would recommend to review template of configuration file [smartling.yml.exa
 
 ```
 $ smartling-cli projects list
-2f2xxxxx  Sitecore Connector                         en-US
-129xxxxx  Wordpress Connector                        en
-855xxxxx  Drupal Connector                           en
-7c7xxxxx  Word files                                 en
+2f2xxxxx  Sitecore Connector           en-US
+129xxxxx  Wordpress Connector          en
+855xxxxx  Drupal Connector             en
+7c7xxxxx  Word files                   en
 ```
 
 ### Information about project
@@ -153,7 +153,6 @@ Smartling, prefixing each path with `testing` (use `-b` or `--branch` option)
 
 ```
 $ smartling-cli files push '**.txt' -b 'testing'
-* 2017-06-27 16:20:54    [INFO] autodetected branch name: master
 testing/test.txt new [3 strings 28 words]
 ```
 
@@ -345,4 +344,14 @@ $ cat files-list.txt | smartling-cli files delete -
 /files/placeholder_test.xml deleted
 /files/test.xml deleted
 test.xml deleted
+```
+
+### Delete all files in project
+
+Let's say the default configured project is `129xxxxx`. But we need to delete **all** files in another project (`2a1xxxxxx`) but use configured credentials
+
+```
+$ smartling-cli files list -s -p 2a1xxxxxx | smartling-cli files delete - -p 2a1xxxxxx
+27 Words To Learn Before You Visit Hawaii.docx deleted
+....
 ```
