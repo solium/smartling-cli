@@ -31,7 +31,7 @@ Usage:
   smartling [options] [-v]... files list --help
   smartling [options] [-v]... files list [--format=] [--short] [<uri>]
   smartling [options] [-v]... files pull --help
-  smartling [options] [-v]... files pull [--locale=]... [--directory=] [--source] [--format=] [<uri>]
+  smartling [options] [-v]... files pull [--locale=]... [--directory=] [--source] [--format=] [--progress=] [<uri>]
   smartling [options] [-v]... files push --help
   smartling [options] [-v]... files push [<file>] [<uri>] [(--authorize|--locale=...)] [--branch=] [--type=]
   smartling [options] [-v]... files status --help
@@ -64,6 +64,8 @@ Commands:
                            [default: $FILE_LIST_FORMAT]
    pull <uri>             Pulls specified files from server.
     --source              Pulls source file as well.
+    --progress <done>     Pulls only translations that are at least specified
+                           percent of work complete.
     -d --directory <dir>  Download all files to specified directory.
     --format <format>     Can be used to format path to downloaded files.
                            Note, that single file can be translated in

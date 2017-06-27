@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/Smartling/api-sdk-go"
@@ -22,7 +23,21 @@ func downloadFileTranslations(
 		locales   = args["--locale"].([]string)
 
 		defaultFormat, _ = args["--format"].(string)
+		progress, _      = args["--progress"].(string)
 	)
+
+	progress = strings.TrimSuffix(progress, "%")
+	if progress == "" {
+		progress = "0"
+	}
+
+	percents, err := strconv.ParseInt(progress, 10, 0)
+	if err != nil {
+		return hierr.Errorf(
+			err,
+			"unable to parse --progress as integer",
+		)
+	}
 
 	if defaultFormat == "" {
 		defaultFormat = defaultFileStatusFormat
@@ -49,6 +64,22 @@ func downloadFileTranslations(
 	}
 
 	for _, locale := range translations {
+		var complete int64
+
+		if locale.CompletedStringCount > 0 {
+			complete = int64(
+				100 *
+					float64(locale.CompletedStringCount) /
+					float64(status.TotalStringCount),
+			)
+		}
+
+		if percents > 0 {
+			if complete < percents {
+				continue
+			}
+		}
+
 		if len(locales) > 0 {
 			if !hasLocaleInList(locale.LocaleID, locales) {
 				continue
@@ -76,7 +107,7 @@ func downloadFileTranslations(
 			return err
 		}
 
-		fmt.Printf("downloaded %s\n", path)
+		fmt.Printf("downloaded %s %d%%\n", path, int(complete))
 	}
 
 	return err

@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	smartling "github.com/Smartling/api-sdk-go"
-	hierr "github.com/reconquest/hierr-go"
+	"github.com/Smartling/api-sdk-go"
+	"github.com/reconquest/hierr-go"
 )
 
 func downloadFile(
