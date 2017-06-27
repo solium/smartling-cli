@@ -205,6 +205,10 @@ Available options:
 
   --format <format>
     Specify format for download file nmae.
+
+  --progress <percents>
+    Specify minimum of translation progress in percents.
+	By default that filter does not apply.
 ` + authenticationOptionsHelp
 
 const filesPushHelp = `smartling files push — upload files to project.
