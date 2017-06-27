@@ -209,6 +209,14 @@ Available options:
   --progress <percents>
     Specify minimum of translation progress in percents.
 	By default that filter does not apply.
+
+  --retrieve <type>
+    Retrieval type according to API specs:
+    > pending — returns any translations, including non-published ones);
+    > published — returns only published translations;
+    > pseudo — returns modified version of original text with certain
+               characters transformed;
+    > contextMatchingInstrumented — to use with Chrome Context Capture;
 ` + authenticationOptionsHelp
 
 const filesPushHelp = `smartling files push — upload files to project.
