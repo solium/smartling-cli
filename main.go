@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
 
@@ -103,6 +105,7 @@ Options:
   --threads <number>      If command can be executed concurrently, it will be
                            executed for at most <number> of threads.
                            [default: 4]
+  -k --insecure           Skip HTTPS certificate validation.
   -v --verbose            Sets verbosity level for logging messages. Specify
                            flag several time to increase verbosity. Useful
                            when debugging and investigating unexpected
@@ -268,8 +271,22 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 	return config, nil
 }
 
-func doProjects(config Config, args map[string]interface{}) error {
+func createClient(config Config, args map[string]interface{}) *smartling.Client {
 	client := smartling.NewClient(config.UserID, config.Secret)
+
+	if args["--insecure"].(bool) {
+		client.HTTP.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		}
+	}
+
+	return client
+}
+
+func doProjects(config Config, args map[string]interface{}) error {
+	client := createClient(config, args)
 
 	setLogger(client, logger, args["--verbose"].(int))
 
@@ -301,7 +318,7 @@ func doProjects(config Config, args map[string]interface{}) error {
 }
 
 func doFiles(config Config, args map[string]interface{}) error {
-	client := smartling.NewClient(config.UserID, config.Secret)
+	client := createClient(config, args)
 
 	setLogger(client, logger, args["--verbose"].(int))
 
