@@ -24,6 +24,7 @@ func downloadFileTranslations(
 
 		defaultFormat, _ = args["--format"].(string)
 		progress, _      = args["--progress"].(string)
+		retrieve, _      = args["--retrieve"].(string)
 	)
 
 	progress = strings.TrimSuffix(progress, "%")
@@ -38,6 +39,8 @@ func downloadFileTranslations(
 			"unable to parse --progress as integer",
 		)
 	}
+
+	retrievalType := smartling.RetrievalType(retrieve)
 
 	if defaultFormat == "" {
 		defaultFormat = defaultFileStatusFormat
@@ -102,7 +105,14 @@ func downloadFileTranslations(
 
 		path = filepath.Join(directory, path)
 
-		err = downloadFile(client, project, file, locale.LocaleID, path)
+		err = downloadFile(
+			client,
+			project,
+			file,
+			locale.LocaleID,
+			path,
+			retrievalType,
+		)
 		if err != nil {
 			return err
 		}

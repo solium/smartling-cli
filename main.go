@@ -31,9 +31,11 @@ Usage:
   smartling [options] [-v]... files list --help
   smartling [options] [-v]... files list [--format=] [--short] [<uri>]
   smartling [options] [-v]... files pull --help
-  smartling [options] [-v]... files pull [--locale=]... [--directory=] [--source] [--format=] [--progress=] [<uri>]
+  smartling [options] [-v]... files pull [--locale=]... [--directory=] [--source] [--format=]
+                                         [--progress=] [--retrieve=] [<uri>]
   smartling [options] [-v]... files push --help
-  smartling [options] [-v]... files push [<file>] [<uri>] [(--authorize|--locale=...)] [--branch=] [--type=]
+  smartling [options] [-v]... files push [(--authorize|--locale=...)] [--branch=] [--type=]
+                                         [<file>] [<uri>] 
   smartling [options] [-v]... files status --help
   smartling [options] [-v]... files status [--directory=] [--format=] [<uri>]
   smartling [options] [-v]... files delete --help
@@ -66,6 +68,8 @@ Commands:
     --source              Pulls source file as well.
     --progress <done>     Pulls only translations that are at least specified
                            percent of work complete.
+    --retrieve <type>     Retrieval type: pending, published, pseudo
+                           or contextMatchingInstrumented.
     -d --directory <dir>  Download all files to specified directory.
     --format <format>     Can be used to format path to downloaded files.
                            Note, that single file can be translated in
