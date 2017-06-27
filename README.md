@@ -2,13 +2,6 @@
 
 A CLI interface for the [Smartling Translation API](https://help.smartling.com/v1.0/reference) in Go.
 
-# Installation
-
-### From sources
-```
-go get github.com/Smartling/smartling-cli
-```
-
 # Building package
 
 ```
@@ -43,6 +36,13 @@ make MAINTAINER=<maintainer> <target>
 
 An executable named `smartling-cli` should become available in your
 `$GOPATH/bin`.
+
+# Installation
+
+### From sources
+```
+go get github.com/Smartling/smartling-cli
+```
 
 ### Windows
 ```
