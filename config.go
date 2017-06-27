@@ -30,6 +30,8 @@ type Config struct {
 
 	Files map[string]FileConfig `yaml:"files"`
 
+	Proxy string `yaml:"proxy,omitempty"`
+
 	path string
 }
 

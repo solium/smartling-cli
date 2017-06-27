@@ -25,6 +25,11 @@ project_id:
     "YOUR_PROJECT_ID_HERE"
 
 
+# (optional) Use specified URL as proxy in case Smartling is not directly
+# accessible.
+proxy:
+    "PROXY_URL"
+
 # (optional) Additional file-specific settings for push and pull commands.
 files:
     # (optional) Special default section will apply configuration to all file

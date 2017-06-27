@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 
@@ -112,6 +113,7 @@ Options:
                            executed for at most <number> of threads.
                            [default: 4]
   -k --insecure           Skip HTTPS certificate validation.
+  --proxy <url>           Use specified URL as proxy server.
   -v --verbose            Sets verbosity level for logging messages. Specify
                            flag several time to increase verbosity. Useful
                            when debugging and investigating unexpected
@@ -277,22 +279,51 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 	return config, nil
 }
 
-func createClient(config Config, args map[string]interface{}) *smartling.Client {
+func createClient(
+	config Config,
+	args map[string]interface{},
+) (*smartling.Client, error) {
 	client := smartling.NewClient(config.UserID, config.Secret)
 
+	var transport http.Transport
+
 	if args["--insecure"].(bool) {
-		client.HTTP.Transport = &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-			},
+		transport.TLSClientConfig = &tls.Config{
+			InsecureSkipVerify: true,
 		}
 	}
 
-	return client
+	if config.Proxy != "" && args["--proxy"] == nil {
+		args["--proxy"] = config.Proxy
+	}
+
+	if args["--proxy"] != nil {
+		proxy, err := url.Parse(args["--proxy"].(string))
+		if err != nil {
+			return nil, NewError(
+				hierr.Errorf(
+					err,
+					"unable to parse specified proxy URL",
+				),
+
+				`Proxy should be valid URL, check CLI options and `+
+					`config value.`,
+			)
+		}
+
+		transport.Proxy = http.ProxyURL(proxy)
+	}
+
+	client.HTTP.Transport = &transport
+
+	return client, nil
 }
 
 func doProjects(config Config, args map[string]interface{}) error {
-	client := createClient(config, args)
+	client, err := createClient(config, args)
+	if err != nil {
+		return err
+	}
 
 	setLogger(client, logger, args["--verbose"].(int))
 
@@ -324,7 +355,10 @@ func doProjects(config Config, args map[string]interface{}) error {
 }
 
 func doFiles(config Config, args map[string]interface{}) error {
-	client := createClient(config, args)
+	client, err := createClient(config, args)
+	if err != nil {
+		return err
+	}
 
 	setLogger(client, logger, args["--verbose"].(int))
 
