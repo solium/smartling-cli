@@ -31,12 +31,12 @@ Usage:
   smartling [options] [-v]... projects locales [--source] [--short] [--format=]
   smartling [options] [-v]... files list --help
   smartling [options] [-v]... files list [--format=] [--short] [<uri>]
-  smartling [options] [-v]... files pull --help
-  smartling [options] [-v]... files pull [--locale=]... [--directory=] [--source] [--format=]
-                                         [--progress=] [--retrieve=] [<uri>]
+  smartling [options] [-v]... files (pull|get) --help
+  smartling [options] [-v]... files (pull|get) [--locale=]... [--directory=] [--source] [--format=]
+                                               [--progress=] [--retrieve=] [<uri>]
   smartling [options] [-v]... files push --help
   smartling [options] [-v]... files push [(--authorize|--locale=...)] [--branch=] [--type=]
-                                         [<file>] [<uri>]
+                                         [<file>] [<uri>] 
   smartling [options] [-v]... files status --help
   smartling [options] [-v]... files status [--directory=] [--format=] [<uri>]
   smartling [options] [-v]... files delete --help
@@ -113,8 +113,7 @@ Options:
                            executed for at most <number> of threads.
                            [default: 4]
   -k --insecure           Skip HTTPS certificate validation.
-  --proxy <url>           Use specified URL as proxy server
-                           protocol://[user[:password]@]host[:port]
+  --proxy <url>           Use specified URL as proxy server.
   -v --verbose            Sets verbosity level for logging messages. Specify
                            flag several time to increase verbosity. Useful
                            when debugging and investigating unexpected
@@ -367,7 +366,7 @@ func doFiles(config Config, args map[string]interface{}) error {
 	case args["list"].(bool):
 		return doFilesList(client, config, args)
 
-	case args["pull"].(bool):
+	case args["pull"].(bool), args["get"].(bool):
 		return doFilesPull(client, config, args)
 
 	case args["push"].(bool):

@@ -342,7 +342,7 @@ func showHelp(args map[string]interface{}) {
 		switch {
 		case args["list"].(bool):
 			fmt.Print(filesListHelp)
-		case args["pull"].(bool):
+		case args["pull"].(bool), args["get"].(bool):
 			fmt.Print(filesPullHelp)
 		case args["push"].(bool):
 			fmt.Print(filesPushHelp)
