@@ -38,11 +38,18 @@ func doFilesStatus(
 
 	var table = NewTableWriter(os.Stdout)
 
+	var progress = Progress{
+		Total: len(files),
+	}
+
 	for _, file := range files {
 		status, err := client.GetFileStatus(project, file.FileURI)
 		if err != nil {
 			return err
 		}
+
+		progress.Increment()
+		progress.Flush()
 
 		translations := status.Items
 

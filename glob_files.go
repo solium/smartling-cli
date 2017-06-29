@@ -6,7 +6,7 @@ import (
 
 	"github.com/Smartling/api-sdk-go"
 	"github.com/gobwas/glob"
-	hierr "github.com/reconquest/hierr-go"
+	"github.com/reconquest/hierr-go"
 )
 
 func globFilesRemote(
