@@ -2,14 +2,14 @@
 # line interface.
 
 # (required) User ID used for authentication.
-# 
+#
 # Must be set either in config file or be passed via command line arguments.
 user_id:
     "YOUR_USER_ID_HERE"
 
 
 # (required) Token Secret used for authentication.
-# 
+#
 # Must be set either in config file or be passed via command line arguments.
 secret:
     "YOUR_SECRET_TOKEN_HERE"
@@ -26,9 +26,11 @@ project_id:
 
 
 # (optional) Use specified URL as proxy in case Smartling is not directly
-# accessible.
-proxy:
-    "PROXY_URL"
+# accessible. An example:
+# http://192.168.0.1:3128 - proxy without authentication
+# http://user:password@192.168.0.1:3128 - proxy with authentication
+#proxy:
+#    "PROXY_URL"
 
 # (optional) Additional file-specific settings for push and pull commands.
 files:
@@ -38,7 +40,7 @@ files:
         # (optional) Defines pull-specific options.
         pull:
             # (optional) Format, which will be used to format file name.
-            # 
+            #
             # If not set, then default format will be used or format,
             # that is set via command line options.
             format: "{{name .FileURI}}{{with .Locale}}_{{.}}{{end}}{{ext .FileURI}}"
@@ -48,7 +50,7 @@ files:
     # tool:
     # > *  - matches everything except /.
     # > ** - matches everything.
-    # 
+    #
     # Note, that pattern should start either with /, * or ** to be matched
     # in case when file was pushed with leading /. Checkout files list in
     # your project first.
