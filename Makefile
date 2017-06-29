@@ -18,7 +18,7 @@ _PKG = pkg/build
 
 _CONTROL = echo >> $(_PKG)/DEBIAN/control
 
-deb: get linux _pkg-init
+deb: _pkg-init
 	mkdir -p $(_PKG)/usr/bin
 	cp bin/smartling.linux $(_PKG)/usr/bin/smartling
 	mkdir -p $(_PKG)/DEBIAN
@@ -35,7 +35,7 @@ deb: get linux _pkg-init
 
 _SPEC = echo >> $(_PKG)/smartling.spec
 
-rpm: get linux _pkg-init
+rpm: _pkg-init
 	$(_SPEC) "Name: smartling"
 	$(_SPEC) "Version: $(VERSION)"
 	$(_SPEC) "Release: 1%{?dist}"
