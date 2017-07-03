@@ -316,6 +316,7 @@ func createClient(
 	}
 
 	client.HTTP.Transport = &transport
+	client.UserAgent = "smartling-cli/" + version
 
 	return client, nil
 }
