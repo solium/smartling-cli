@@ -114,6 +114,8 @@ Options:
                            [default: 4]
   -k --insecure           Skip HTTPS certificate validation.
   --proxy <url>           Use specified URL as proxy server.
+  --smartling-url <url>   Specify base Smartling URL, merely for testing
+                           purposes.
   -v --verbose            Sets verbosity level for logging messages. Specify
                            flag several time to increase verbosity. Useful
                            when debugging and investigating unexpected
@@ -313,6 +315,10 @@ func createClient(
 		}
 
 		transport.Proxy = http.ProxyURL(proxy)
+	}
+
+	if args["--smartling-url"] != nil {
+		client.BaseURL = args["--smartling-url"].(string)
 	}
 
 	client.HTTP.Transport = &transport
