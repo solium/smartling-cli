@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -44,6 +45,16 @@ func globFilesRemote(
 		if pattern.Match(file.FileURI) {
 			result = append(result, file)
 		}
+	}
+
+	if len(result) == 0 {
+		return nil, NewError(
+			fmt.Errorf(
+				"no files found on the remote server matching provided pattern",
+			),
+
+			"Check that file URI pattern is correct.",
+		)
 	}
 
 	return result, nil
