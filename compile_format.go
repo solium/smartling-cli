@@ -3,6 +3,7 @@ package main
 import (
 	"path/filepath"
 	"strings"
+	"sync"
 	"text/template"
 
 	"github.com/reconquest/hierr-go"
@@ -12,11 +13,20 @@ var (
 	// because we can have specific formats for different file types defined
 	// in config file, we need to cache templates to prevent overhead in
 	// runtime
-	compiledFormatsCache = map[string]*Format{}
+	compiledFormatsCache = struct {
+		sync.Mutex
+
+		contents map[string]*Format
+	}{
+		contents: map[string]*Format{},
+	}
 )
 
 func compileFormat(definition string) (*Format, error) {
-	if format, ok := compiledFormatsCache[definition]; ok {
+	compiledFormatsCache.Lock()
+	defer compiledFormatsCache.Unlock()
+
+	if format, ok := compiledFormatsCache.contents[definition]; ok {
 		return format, nil
 	}
 
@@ -58,7 +68,7 @@ func compileFormat(definition string) (*Format, error) {
 		)
 	}
 
-	compiledFormatsCache[definition] = &format
+	compiledFormatsCache.contents[definition] = &format
 
 	return &format, nil
 }

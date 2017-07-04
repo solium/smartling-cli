@@ -117,7 +117,11 @@ func downloadFileTranslations(
 			return err
 		}
 
-		fmt.Printf("downloaded %s %d%%\n", path, int(complete))
+		if source {
+			fmt.Printf("downloaded %s\n", path)
+		} else {
+			fmt.Printf("downloaded %s %d%%\n", path, int(complete))
+		}
 	}
 
 	return err

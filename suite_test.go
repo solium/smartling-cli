@@ -3,12 +3,12 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"os/exec"
+	"sort"
 	"strings"
 	"testing"
 
@@ -33,7 +33,7 @@ type MainSuite struct {
 }
 
 func (suite *MainSuite) SetupSuite() {
-	suite.Mock.Server = httptest.NewTLSServer(
+	suite.Mock.Server = httptest.NewUnstartedServer(
 		http.HandlerFunc(
 			func(writer http.ResponseWriter, request *http.Request) {
 				auth, err := handleAuthentication(writer, request)
@@ -59,6 +59,9 @@ func (suite *MainSuite) SetupSuite() {
 			},
 		),
 	)
+
+	suite.Mock.Server.Config.SetKeepAlivesEnabled(false)
+	suite.Mock.Server.StartTLS()
 }
 
 func (suite *MainSuite) TearDownSuite() {
@@ -112,10 +115,15 @@ func (suite *MainSuite) assertStdout(output []string, args ...interface{}) {
 
 	assert.True(suite.T(), success)
 	assert.Empty(suite.T(), stderr)
+
+	sorted := strings.Split(stdout, "\n")
+	sort.Strings(sorted)
+	sort.Strings(output)
+
 	assert.Equal(
 		suite.T(),
 		strings.Join(output, "\n"),
-		strings.TrimSpace(stdout),
+		strings.TrimSpace(strings.Join(sorted, "\n")),
 	)
 }
 
@@ -125,7 +133,7 @@ func TestMainSuite(t *testing.T) {
 
 func Test_Run(t *testing.T) {
 	if os.Getenv("_TEST_RUN") != "1" {
-		return
+		t.SkipNow()
 	}
 
 	var (
@@ -150,7 +158,7 @@ func Test_Run(t *testing.T) {
 }
 
 func writeSmartlingReply(
-	writer io.Writer,
+	writer http.ResponseWriter,
 	code string,
 	reply interface{},
 ) error {
@@ -164,6 +172,9 @@ func writeSmartlingReply(
 	payload.Response.Code = code
 	payload.Response.Data = reply
 
+	writer.Header().Set("Content-Type", "application/json")
+	writer.WriteHeader(http.StatusOK)
+
 	return json.NewEncoder(writer).Encode(payload)
 }
 
@@ -174,8 +185,6 @@ func handleAuthentication(
 	if !strings.HasSuffix(request.URL.Path, "/authenticate") {
 		return false, nil
 	}
-
-	writer.WriteHeader(http.StatusOK)
 
 	err := writeSmartlingReply(
 		writer,

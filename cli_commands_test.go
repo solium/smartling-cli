@@ -2,7 +2,9 @@ package main
 
 import (
 	"io"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/Smartling/api-sdk-go"
@@ -14,8 +16,6 @@ func (suite *MainSuite) TestProjectsList() {
 		writer http.ResponseWriter,
 		request *http.Request,
 	) {
-		writer.WriteHeader(http.StatusOK)
-
 		list := smartling.ProjectsList{
 			TotalCount: 2,
 			Items: []smartling.Project{
@@ -65,8 +65,6 @@ func (suite *MainSuite) TestProjectsInfo() {
 			strings.HasSuffix(request.URL.Path, "/01234ab"),
 		)
 
-		writer.WriteHeader(http.StatusOK)
-
 		list := smartling.Project{
 			ProjectID:               "01234ab",
 			ProjectName:             "Rick and Morty",
@@ -103,8 +101,6 @@ func (suite *MainSuite) TestProjectsLocales() {
 			suite.T(),
 			strings.HasSuffix(request.URL.Path, "/01234ab"),
 		)
-
-		writer.WriteHeader(http.StatusOK)
 
 		list := smartling.ProjectDetails{
 			Project: smartling.Project{
@@ -173,8 +169,6 @@ func (suite *MainSuite) TestFilesList() {
 			strings.Contains(request.URL.Path, "/01234ab/"),
 		)
 
-		writer.WriteHeader(http.StatusOK)
-
 		list := smartling.FilesList{
 			TotalCount: 2,
 			Items: []smartling.File{
@@ -186,7 +180,7 @@ func (suite *MainSuite) TestFilesList() {
 				{
 					FileURI:      "/Morty/stupidness.txt",
 					LastUploaded: utc("1989-01-09T05:00:00Z"),
-					FileType:     "plain",
+					FileType:     "plaintext",
 				},
 			},
 		}
@@ -200,7 +194,7 @@ func (suite *MainSuite) TestFilesList() {
 	suite.assertStdout(
 		[]string{
 			"/Rick/portal-gun.java  2016-09-16T16:06:16Z  javaProperties",
-			"/Morty/stupidness.txt  1989-01-09T05:00:00Z  plain",
+			"/Morty/stupidness.txt  1989-01-09T05:00:00Z  plaintext",
 		},
 		"files", "list", "-p", "01234ab",
 	)
@@ -239,23 +233,27 @@ func (suite *MainSuite) TestFilesPull() {
 			strings.Contains(request.URL.Path, "/01234ab/"),
 		)
 
-		writer.WriteHeader(http.StatusOK)
-
 		var reply interface{}
 
 		switch {
 		case strings.HasSuffix(request.URL.Path, "/file"):
+			writer.WriteHeader(http.StatusOK)
+
 			switch request.URL.Query().Get("fileUri") {
 			case "/Rick/portal-gun.java":
 				switch {
 				case strings.Contains(request.URL.Path, "/de-DE/"):
 					io.WriteString(writer, "Rick:de-DE\n")
+				default:
+					io.WriteString(writer, "Rick:original\n")
 				}
 
 			case "/Morty/stupidness.txt":
 				switch {
 				case strings.Contains(request.URL.Path, "/es/"):
 					io.WriteString(writer, "Morty:es\n")
+				default:
+					io.WriteString(writer, "Morty:original\n")
 				}
 			}
 
@@ -302,7 +300,7 @@ func (suite *MainSuite) TestFilesPull() {
 					{
 						FileURI:      "/Morty/stupidness.txt",
 						LastUploaded: utc("1989-01-09T05:00:00Z"),
-						FileType:     "plain",
+						FileType:     "plaintext",
 					},
 				},
 			}
@@ -314,8 +312,66 @@ func (suite *MainSuite) TestFilesPull() {
 		}
 	}
 
+	assertFileEquals := func(path string, contents string) {
+		output, err := ioutil.ReadFile(path)
+		assert.NoError(suite.T(), err)
+		assert.Equal(suite.T(), string(output), contents)
+	}
+
+	defer func() {
+		err := os.RemoveAll("_test")
+		assert.NoError(suite.T(), err)
+	}()
+
 	suite.assertStdout(
-		[]string{},
+		[]string{
+			"downloaded _test/Morty/stupidness_es.txt 50%",
+			"downloaded _test/Rick/portal-gun_de-DE.java 83%",
+		},
 		"files", "pull", "-p", "01234ab", "-d", "_test",
 	)
+
+	assertFileEquals("_test/Morty/stupidness_es.txt", "Morty:es\n")
+	assertFileEquals("_test/Rick/portal-gun_de-DE.java", "Rick:de-DE\n")
+
+	suite.assertStdout(
+		[]string{
+			"downloaded _test/x/Morty/stupidness_es.txt 50%",
+			"downloaded _test/x/Rick/portal-gun_de-DE.java 83%",
+		},
+		"files", "pull", "-p", "01234ab", "-d", "_test/x",
+	)
+
+	assertFileEquals("_test/x/Morty/stupidness_es.txt", "Morty:es\n")
+	assertFileEquals("_test/x/Rick/portal-gun_de-DE.java", "Rick:de-DE\n")
+
+	suite.assertStdout(
+		[]string{
+			"downloaded _test/Morty/stupidness 50%",
+			"downloaded _test/Rick/portal-gun 83%",
+		},
+		"files", "pull", "-p", "01234ab", "-d", "_test", "--format",
+		"{{name .FileURI}}",
+	)
+
+	assertFileEquals("_test/Morty/stupidness", "Morty:es\n")
+	assertFileEquals("_test/Rick/portal-gun", "Rick:de-DE\n")
+
+	suite.assertStdout(
+		[]string{
+			"downloaded _test/Rick/portal-gun_de-DE.java 83%",
+		},
+		"files", "pull", "-p", "01234ab", "-d", "_test", "--progress", "80%",
+	)
+
+	suite.assertStdout(
+		[]string{
+			"downloaded _test/Rick/portal-gun.java",
+			"downloaded _test/Morty/stupidness.txt",
+		},
+		"files", "pull", "-p", "01234ab", "-d", "_test", "--source",
+	)
+
+	assertFileEquals("_test/Morty/stupidness.txt", "Morty:original\n")
+	assertFileEquals("_test/Rick/portal-gun.java", "Rick:original\n")
 }
