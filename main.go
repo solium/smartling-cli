@@ -66,6 +66,8 @@ Commands:
    status <uri>           Shows file translation status.
     --format <format>     Specifies format to use for file status output.
                            [default: $FILE_STATUS_FORMAT]
+    --directory <dir>     Use another directory as reference to check for
+                           local files.
    list <uri>             Lists files from specified project.
     -s --short            Output only file URI.
     --format <format>     Specifies format to use for file list output.
@@ -89,6 +91,19 @@ Commands:
     -b --branch <branch>  Prepend specified text to the file uri.
     -t --type <type>      Specifies file type which will be used instead of
                            automatically deduced from extension.
+   rename <old> <new>     Renames given file by old URI into new URI.
+   delete <uri>           Deletes given file from Smartling. This operation
+                           can not be undone, so use with care.
+  import <uri> <file>     Imports translations for given original file URI with
+         <locale>          given locale. Original file mush present on server
+                           prior to import.
+   --published            Translated content will be published.
+   --post-translation     Translated content will be imported into first step
+                           of translation. If there are none, it will be
+                           published.
+   --type <type>          Specify file type. If option is not given, file type
+                           will be deduced from extension.
+   --overwrite            Overwrite any existing translations.
 
 
 Options:
