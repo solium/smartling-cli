@@ -321,6 +321,15 @@ Available options:
     Specify project to use.
 ` + authenticationOptionsHelp
 
+const filesRenameHelp = `smartling files rename — rename specified file.
+
+Renames specified file URI into new file URI.
+
+Available options:
+  -p --project <project>
+    Specify project to use.
+` + authenticationOptionsHelp
+
 func showHelp(args map[string]interface{}) {
 	switch {
 	case args["init"].(bool):
@@ -330,10 +339,8 @@ func showHelp(args map[string]interface{}) {
 		switch {
 		case args["list"].(bool):
 			fmt.Print(projectsListHelp)
-
 		case args["info"].(bool):
 			fmt.Print(projectsInfoHelp)
-
 		case args["locales"].(bool):
 			fmt.Print(projectsLocalesHelp)
 		}
@@ -350,6 +357,8 @@ func showHelp(args map[string]interface{}) {
 			fmt.Print(filesStatusHelp)
 		case args["delete"].(bool):
 			fmt.Print(filesDeleteHelp)
+		case args["rename"].(bool):
+			fmt.Print(filesRenameHelp)
 		}
 
 	default:
