@@ -330,6 +330,30 @@ Available options:
     Specify project to use.
 ` + authenticationOptionsHelp
 
+const importHelp = `smartling import — import file translations.
+
+Import pre-existent file translations into Smartling. Note, that
+original file should be pushed prior file translations are imported.
+
+Either --published or --post-translation should present to specify state
+of imported translation.  Value indicates the workflow state to import the
+translations into. Content will be imported into the language's default
+workflow.
+
+--overwrite option can be used to replace existent translations.
+
+Available options:
+  --published
+    The translated content is published.
+
+  --post-translation
+   The translated content is imported into the first step after translation
+   If there are none, it will be published.
+
+  --overwrite
+    Overwrite existing translations.
+` + authenticationOptionsHelp
+
 func showHelp(args map[string]interface{}) {
 	switch {
 	case args["init"].(bool):
@@ -360,6 +384,9 @@ func showHelp(args map[string]interface{}) {
 		case args["rename"].(bool):
 			fmt.Print(filesRenameHelp)
 		}
+
+	case args["import"].(bool):
+		fmt.Print(importHelp)
 
 	default:
 		fmt.Print(usage)

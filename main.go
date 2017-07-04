@@ -43,6 +43,9 @@ Usage:
   smartling [options] [-v]... files status [--directory=] [--format=] [<uri>]
   smartling [options] [-v]... files delete --help
   smartling [options] [-v]... files delete <uri>
+  smartling [options] [-v]... import --help
+  smartling [options] [-v]... import <uri> <file> <locale> (--published|--post-translation)
+                                           [--type=] [--overwrite]
   smartling --help
 
 Commands:
@@ -192,6 +195,9 @@ func main() {
 
 	case args["files"].(bool):
 		err = doFiles(config, args)
+
+	case args["import"].(bool):
+		err = doImport(config, args)
 
 	default:
 		showHelp(args)
@@ -393,4 +399,15 @@ func doFiles(config Config, args map[string]interface{}) error {
 	}
 
 	return nil
+}
+
+func doImport(config Config, args map[string]interface{}) error {
+	client, err := createClient(config, args)
+	if err != nil {
+		return err
+	}
+
+	setLogger(client, logger, args["--verbose"].(int))
+
+	return doFilesImport(client, config, args)
 }
