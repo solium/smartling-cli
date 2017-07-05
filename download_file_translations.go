@@ -22,9 +22,9 @@ func downloadFileTranslations(
 		source    = args["--source"].(bool)
 		locales   = args["--locale"].([]string)
 
-		defaultFormat, _ = args["--format"].(string)
-		progress, _      = args["--progress"].(string)
-		retrieve, _      = args["--retrieve"].(string)
+		format, formatGiven = args["--format"].(string)
+		progress, _         = args["--progress"].(string)
+		retrieve, _         = args["--retrieve"].(string)
 	)
 
 	progress = strings.TrimSuffix(progress, "%")
@@ -42,8 +42,8 @@ func downloadFileTranslations(
 
 	retrievalType := smartling.RetrievalType(retrieve)
 
-	if defaultFormat == "" {
-		defaultFormat = defaultFileStatusFormat
+	if format == "" {
+		format = defaultFileStatusFormat
 	}
 
 	status, err := client.GetFileStatus(project, file.FileURI)
@@ -89,11 +89,18 @@ func downloadFileTranslations(
 			}
 		}
 
+		useFormat := usePullFormat
+		if formatGiven {
+			useFormat = func(FileConfig) string {
+				return format
+			}
+		}
+
 		path, err := executeFileFormat(
 			config,
 			file,
-			defaultFormat,
-			usePullFormat,
+			format,
+			useFormat,
 			map[string]interface{}{
 				"FileURI": file.FileURI,
 				"Locale":  locale.LocaleID,
