@@ -1,12 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 
 	"github.com/reconquest/hierr-go"
-
-	"gopkg.in/yaml.v2"
 )
 
 func doInit(config Config, args map[string]interface{}) error {
@@ -75,11 +74,12 @@ func doInit(config Config, args map[string]interface{}) error {
 		config.ProjectID = input.ProjectID
 	}
 
-	result, err := yaml.Marshal(config)
+	var result bytes.Buffer
+	err := configTemplate.Execute(&result, config)
 	if err != nil {
 		return hierr.Errorf(
 			err,
-			"unable to encode new config representation",
+			"unable to compile config template",
 		)
 	}
 
@@ -89,9 +89,9 @@ func doInit(config Config, args map[string]interface{}) error {
 		fmt.Println("New config is dislpayed below.")
 		fmt.Println()
 
-		fmt.Println(string(result))
+		fmt.Println(result.String())
 	} else {
-		err = ioutil.WriteFile(config.path, result, 0644)
+		err = ioutil.WriteFile(config.path, result.Bytes(), 0644)
 		if err != nil {
 			return hierr.Errorf(
 				err,
