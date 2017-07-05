@@ -15,6 +15,10 @@ func doProjectsInfo(
 ) error {
 	details, err := client.GetProjectDetails(config.ProjectID)
 	if err != nil {
+		if _, ok := err.(smartling.NotFoundError); ok {
+			return ProjectNotFoundError{}
+		}
+
 		return hierr.Errorf(
 			err,
 			`unable to get project "%s" details`,

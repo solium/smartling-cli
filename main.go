@@ -217,8 +217,18 @@ func main() {
 	}
 
 	if err != nil {
-		fmt.Println(err)
+		reportError(err)
 		os.Exit(1)
+	}
+}
+
+func reportError(err error) {
+	switch err := err.(type) {
+	case ProjectNotFoundError, Error:
+		fmt.Println(err)
+
+	default:
+		fmt.Println("ERROR:", err)
 	}
 }
 

@@ -32,6 +32,10 @@ func globFilesRemote(
 
 	files, err := client.ListAllFiles(project, request)
 	if err != nil {
+		if _, ok := err.(smartling.NotFoundError); ok {
+			return nil, ProjectNotFoundError{}
+		}
+
 		return nil, hierr.Errorf(
 			err,
 			`unable to list files in project "%s"`,

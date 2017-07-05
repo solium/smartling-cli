@@ -23,3 +23,13 @@ func (err Error) Error() string {
 		fmt.Sprintf(err.Description, err.Args...),
 	)
 }
+
+type ProjectNotFoundError struct{}
+
+func (error ProjectNotFoundError) Error() string {
+	return NewError(
+		fmt.Errorf(`specified project is not found`),
+		`Check that speciied project is correct in --project option `+
+			`and in config file as well.`,
+	).Error()
+}
