@@ -43,8 +43,9 @@ Usage:
   smartling [options] [-v]... files status [--directory=] [--format=] [<uri>]
   smartling [options] [-v]... files delete --help
   smartling [options] [-v]... files delete <uri>
-  smartling [options] [-v]... import --help
-  smartling [options] [-v]... import <uri> <file> <locale> (--published|--post-translation)
+  smartling [options] [-v]... files import --help
+  smartling [options] [-v]... files import <uri> <file> <locale>
+                                           [(--published|--post-translation)]
                                            [--type=] [--overwrite]
   smartling --help
 
@@ -94,16 +95,16 @@ Commands:
    rename <old> <new>     Renames given file by old URI into new URI.
    delete <uri>           Deletes given file from Smartling. This operation
                            can not be undone, so use with care.
-  import <uri> <file>     Imports translations for given original file URI with
-         <locale>          given locale. Original file mush present on server
+   import <uri> <file>    Imports translations for given original file URI with
+          <locale>          given locale. Original file mush present on server
                            prior to import.
-   --published            Translated content will be published.
-   --post-translation     Translated content will be imported into first step
+    --published           Translated content will be published.
+    --post-translation    Translated content will be imported into first step
                            of translation. If there are none, it will be
                            published.
-   --type <type>          Specify file type. If option is not given, file type
+    --type <type>         Specify file type. If option is not given, file type
                            will be deduced from extension.
-   --overwrite            Overwrite any existing translations.
+    --overwrite           Overwrite any existing translations.
 
 
 Options:
@@ -210,9 +211,6 @@ func main() {
 
 	case args["files"].(bool):
 		err = doFiles(config, args)
-
-	case args["import"].(bool):
-		err = doImport(config, args)
 
 	default:
 		showHelp(args)
@@ -411,18 +409,10 @@ func doFiles(config Config, args map[string]interface{}) error {
 
 	case args["rename"].(bool):
 		return doFilesRename(client, config, args)
+
+	case args["import"].(bool):
+		return doFilesImport(client, config, args)
 	}
 
 	return nil
-}
-
-func doImport(config Config, args map[string]interface{}) error {
-	client, err := createClient(config, args)
-	if err != nil {
-		return err
-	}
-
-	setLogger(client, logger, args["--verbose"].(int))
-
-	return doFilesImport(client, config, args)
 }

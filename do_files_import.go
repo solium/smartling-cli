@@ -36,9 +36,7 @@ func doFilesImport(
 	request.File = contents
 	request.FileURI = uri
 
-	if args["--published"].(bool) {
-		request.TranslationState = smartling.TranslationStatePublished
-	}
+	request.TranslationState = smartling.TranslationStatePublished
 
 	if args["--post-translation"].(bool) {
 		request.TranslationState = smartling.TranslationStatePostTranslation
@@ -77,7 +75,12 @@ func doFilesImport(
 		)
 	}
 
-	fmt.Printf("XXXXXX do_files_import.go:57 string(result): %#v\n", string(result))
+	fmt.Printf(
+		"%s imported [%d words %d strings]\n",
+		file,
+		result.WordCount,
+		result.StringCount,
+	)
 
 	return nil
 }

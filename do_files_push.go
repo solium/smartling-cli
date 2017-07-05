@@ -179,8 +179,9 @@ func doFilesPush(
 		}
 
 		fmt.Printf(
-			"%s %s [%d strings %d words]\n",
+			"%s (%s) %s [%d strings %d words]\n",
 			branch+file,
+			fileType,
 			status,
 			response.StringCount,
 			response.WordCount,

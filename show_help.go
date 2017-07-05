@@ -383,10 +383,9 @@ func showHelp(args map[string]interface{}) {
 			fmt.Print(filesDeleteHelp)
 		case args["rename"].(bool):
 			fmt.Print(filesRenameHelp)
+		case args["import"].(bool):
+			fmt.Print(importHelp)
 		}
-
-	case args["import"].(bool):
-		fmt.Print(importHelp)
 
 	default:
 		fmt.Print(usage)
