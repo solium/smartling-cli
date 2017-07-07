@@ -243,6 +243,18 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 		)
 	}
 
+	if config.UserID == "" {
+		config.UserID = os.Getenv("SMARTLING_USER_ID")
+	}
+
+	if config.Secret == "" {
+		config.Secret = os.Getenv("SMARTLING_SECRET")
+	}
+
+	if config.ProjectID == "" {
+		config.Secret = os.Getenv("SMARTLING_PROJECT_ID")
+	}
+
 	if args["--user"] != nil {
 		config.UserID = args["--user"].(string)
 	}
