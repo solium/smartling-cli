@@ -83,3 +83,16 @@ smartling files push my-file.txt
 ```
 
 Find more [example usages there](examples.md).
+
+# Development
+
+## Managing dependencies
+
+Project uses [manul](https://github.com/kovetskiy/manul) vendoring tool,
+which uses vendoring through git-submodules.
+
+After adding any third-party libraries, you need to update vendoring:
+
+```
+manul -Ir
+```
