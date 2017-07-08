@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -26,8 +25,6 @@ type MainSuite struct {
 
 	Mock struct {
 		Server  *httptest.Server
-		Request *http.Request
-		Body    []byte
 		Handler http.HandlerFunc
 	}
 }
@@ -44,14 +41,6 @@ func (suite *MainSuite) SetupSuite() {
 				if auth {
 					return
 				}
-
-				body, err := ioutil.ReadAll(request.Body)
-				if err != nil {
-					panic(err)
-				}
-
-				suite.Mock.Body = body
-				suite.Mock.Request = request
 
 				if suite.Mock.Handler != nil {
 					suite.Mock.Handler(writer, request)
@@ -111,10 +100,9 @@ func (suite *MainSuite) run(opts ...interface{}) (bool, string, string) {
 }
 
 func (suite *MainSuite) assertStdout(output []string, args ...interface{}) {
-	success, stdout, stderr := suite.run(args...)
+	success, stdout, _ := suite.run(args...)
 
 	assert.True(suite.T(), success)
-	assert.Empty(suite.T(), stderr)
 
 	sorted := strings.Split(stdout, "\n")
 	sort.Strings(sorted)

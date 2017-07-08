@@ -76,10 +76,10 @@ func doFilesImport(
 	}
 
 	fmt.Printf(
-		"%s imported [%d words %d strings]\n",
+		"%s imported [%d strings %d words]\n",
 		file,
-		result.WordCount,
 		result.StringCount,
+		result.WordCount,
 	)
 
 	return nil

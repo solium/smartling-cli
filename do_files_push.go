@@ -128,10 +128,11 @@ func doFilesPush(
 
 		request := smartling.FileUploadRequest{
 			File:               contents,
-			FileURI:            branch + uri,
 			Authorize:          authorize,
 			LocalesToAuthorize: locales,
 		}
+
+		request.FileURI = branch + uri
 
 		if fileConfig.Push.Type == "" {
 			if fileType == "" {
@@ -181,7 +182,7 @@ func doFilesPush(
 		fmt.Printf(
 			"%s (%s) %s [%d strings %d words]\n",
 			branch+file,
-			fileType,
+			request.FileType,
 			status,
 			response.StringCount,
 			response.WordCount,
