@@ -67,19 +67,19 @@ First of all, you need to create config file with authentication parameters
 for your project. To ease process, there is `init` command:
 
 ```
-smartling init
+smartling-cli init
 ```
 
 # Example usages
 
 Display all target project locales along with their description.
 ```
-smartling projects locales
+smartling-cli projects locales
 ```
 
 Upload file as is for translation with automatic file type detection.
 ```
-smartling files push my-file.txt
+smartling-cli files push my-file.txt
 ```
 
 Find more [example usages there](examples.md).
