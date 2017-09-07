@@ -12,14 +12,14 @@ var (
 # Config file is optional and all configuration options can be set from command
 # line interface.
 
-# (required) User ID used for authentication.
+# (required) Smartling API V2.0 User Identifier used for authentication.
 #
 # Must be set either in config file or be passed via command line arguments.
 user_id:
     "{% .UserID %}"
 
 
-# (required) Token Secret used for authentication.
+# (required) Smartling API V2.0 Token Secret used for authentication.
 #
 # Must be set either in config file or be passed via command line arguments.
 secret:

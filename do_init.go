@@ -31,7 +31,7 @@ func doInit(config Config, args map[string]interface{}) error {
 	var input Config
 
 	prompt(
-		"Enter User ID",
+		"Enter Smartling API V2.0 User Identifier:",
 		config.UserID,
 		config.UserID == "",
 		&input.UserID,
@@ -42,7 +42,7 @@ func doInit(config Config, args map[string]interface{}) error {
 	}
 
 	prompt(
-		"Enter Token Secret",
+		"Enter Smartling API V2.0 Token Secret:",
 		config.Secret,
 		config.Secret == "",
 		&input.Secret,
