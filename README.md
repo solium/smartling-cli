@@ -1,6 +1,7 @@
 # Smartling
 
-A CLI interface for the [Smartling Translation API](https://help.smartling.com/v1.0/reference) in Go.
+A CLI interface for the [Smartling Translation Management Platform's APIs](https://help.smartling.com/v1.0/reference) in Go.
+Currently alpha release, commands and parameters are subject to change.
 
 # Installation
 
