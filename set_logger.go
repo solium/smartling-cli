@@ -13,7 +13,7 @@ func setLogger(client *smartling.Client, logger lorg.Logger, verbosity int) {
 	case 1:
 		client.SetInfoLogger(logger.Infof)
 
-	case 2:
+	default:
 		client.SetDebugLogger(logger.Debugf)
 	}
 }

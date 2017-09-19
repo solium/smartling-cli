@@ -196,10 +196,13 @@ func main() {
 	}
 
 	switch args["--verbose"].(int) {
+	case 0:
+		// nothing do to
+
 	case 1:
 		logger.SetLevel(lorg.LevelInfo)
 
-	case 2:
+	default:
 		logger.SetLevel(lorg.LevelDebug)
 	}
 
