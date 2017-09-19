@@ -36,7 +36,7 @@ Usage:
                                                [--progress=] [--retrieve=] [<uri>]
   smartling [options] [-v]... files push --help
   smartling [options] [-v]... files push [(--authorize|--locale=...)] [--branch=] [--type=]
-                                         [<file>] [<uri>] 
+                                         [--directive=]... [<file>] [<uri>]
   smartling [options] [-v]... files rename --help
   smartling [options] [-v]... files rename <old-uri> <new-uri>
   smartling [options] [-v]... files status --help
@@ -92,6 +92,8 @@ Commands:
     -b --branch <branch>  Prepend specified text to the file uri.
     -t --type <type>      Specifies file type which will be used instead of
                            automatically deduced from extension.
+    -r --directive <dir>  Specifies one or more directives to use in push
+                           request.
    rename <old> <new>     Renames given file by old URI into new URI.
    delete <uri>           Deletes given file from Smartling. This operation
                            can not be undone, so use with care.
@@ -129,6 +131,8 @@ Options:
                            Incompatible with -l option.
   -b --branch <branch>    Prepend specified value to the file URI.
   -t --type <type>        Specify file type. Depends on command.
+  -r --directive <dir>    Directives to add to push request in form of
+                           <name>=<value>.
   --dry-run               Do not actually perform action, just log it.
   --threads <number>      If command can be executed concurrently, it will be
                            executed for at most <number> of threads.

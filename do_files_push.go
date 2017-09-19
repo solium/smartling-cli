@@ -16,14 +16,15 @@ func doFilesPush(
 	args map[string]interface{},
 ) error {
 	var (
-		project     = config.ProjectID
-		file, _     = args["<file>"].(string)
-		uri, useURI = args["<uri>"].(string)
-		branch, _   = args["--branch"].(string)
-		locales, _  = args["--locale"].([]string)
-		authorize   = args["--authorize"].(bool)
-		directory   = args["--directory"].(string)
-		fileType, _ = args["--type"].(string)
+		project       = config.ProjectID
+		file, _       = args["<file>"].(string)
+		uri, useURI   = args["<uri>"].(string)
+		branch, _     = args["--branch"].(string)
+		locales, _    = args["--locale"].([]string)
+		authorize     = args["--authorize"].(bool)
+		directory     = args["--directory"].(string)
+		fileType, _   = args["--type"].(string)
+		directives, _ = args["--directive"].([]string)
 	)
 
 	if branch == "@auto" {
@@ -158,6 +159,26 @@ func doFilesPush(
 		}
 
 		request.Smartling.Directives = fileConfig.Push.Directives
+
+		for _, directive := range directives {
+			spec := strings.SplitN(directive, "=", 2)
+			if len(spec) != 2 {
+				return NewError(
+					fmt.Errorf(
+						"invalid directive specification: %q",
+						directive,
+					),
+
+					`Should be in the form of <name>=<value>.`,
+				)
+			}
+
+			if request.Smartling.Directives == nil {
+				request.Smartling.Directives = map[string]string{}
+			}
+
+			request.Smartling.Directives[spec[0]] = spec[1]
+		}
 
 		response, err := client.UploadFile(project, request)
 
