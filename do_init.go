@@ -2,9 +2,11 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 
+	"github.com/Smartling/api-sdk-go"
 	"github.com/reconquest/hierr-go"
 )
 
@@ -82,6 +84,34 @@ func doInit(config Config, args map[string]interface{}) error {
 			"unable to compile config template",
 		)
 	}
+
+	fmt.Println("Testing connection to Smartling API...")
+
+	client, err := createClient(config, args)
+	if err != nil {
+		return hierr.Errorf(
+			err,
+			"unable to create client for testing connection",
+		)
+	}
+
+	err = client.Authenticate()
+	if err != nil {
+		if _, ok := err.(smartling.NotAuthorizedError); ok {
+			return NewError(
+				errors.New("Not authorized."),
+				"Your credentials are invalid. Double check them and run "+
+					"init command again.",
+			)
+		} else {
+			return NewError(
+				hierr.Errorf(err, "failure while testing connection"),
+				"Contact developer for more info.",
+			)
+		}
+	}
+
+	fmt.Println("Connection is successfull.")
 
 	if args["--dry-run"].(bool) {
 		fmt.Println()
