@@ -37,7 +37,7 @@ Usage:
                                                [--progress=] [--retrieve=] [<uri>]
   smartling [options] [-v]... files push --help
   smartling [options] [-v]... files push [(--authorize|--locale=...)] [--branch=] [--type=]
-                                         [--directive=]... [<file>] [<uri>]
+                                         [--directory=] [--directive=]... [<file>] [<uri>]
   smartling [options] [-v]... files rename --help
   smartling [options] [-v]... files rename <old-uri> <new-uri>
   smartling [options] [-v]... files status --help
@@ -282,11 +282,17 @@ func findConfig(name string) (string, error) {
 }
 
 func loadConfig(args map[string]interface{}) (Config, error) {
+	var (
+		directory, _ = args["--directory"].(string)
+	)
+
 	var err error
 
 	path, _ := args["--config"].(string)
 	if path == "" {
-		path, err = findConfig(defaultConfigName)
+		path, err = findConfig(
+			filepath.Join(directory, defaultConfigName),
+		)
 		if err != nil {
 			return Config{}, NewError(
 				err,

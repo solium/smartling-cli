@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 
 	"github.com/Smartling/api-sdk-go"
 	"github.com/gobwas/glob"
@@ -64,7 +66,29 @@ func globFilesRemote(
 	return result, nil
 }
 
-func globFilesLocally(directory string, mask string) ([]string, error) {
+func getDirectoryFromPattern(mask string) (string, string) {
+	matches := regexp.MustCompile(`^([^*?{}\[\]]+)/(.+)$`).FindStringSubmatch(
+		mask,
+	)
+
+	if len(matches) < 2 {
+		return "", mask
+	}
+
+	return matches[1], matches[2]
+}
+
+func globFilesLocally(
+	directory string,
+	base string,
+	mask string,
+) ([]string, error) {
+	if strings.HasPrefix(base, "/") {
+		directory = base
+	} else {
+		directory = filepath.Join(directory, base)
+	}
+
 	pattern, err := glob.Compile(mask, '/')
 	if err != nil {
 		return nil, NewError(
@@ -74,17 +98,31 @@ func globFilesLocally(directory string, mask string) ([]string, error) {
 		)
 	}
 
+	if _, err := os.Stat(filepath.Join(directory, mask)); err == nil {
+		return []string{filepath.Join(directory, mask)}, nil
+	}
+
 	var result []string
 
 	err = filepath.Walk(
 		directory,
 		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+
 			if info.IsDir() {
 				return nil
 			}
 
+			path = strings.TrimPrefix(path, directory)
+			path = strings.TrimPrefix(path, "/")
+
 			if pattern.Match(path) {
-				result = append(result, path)
+				result = append(
+					result,
+					filepath.Join(directory, path),
+				)
 			}
 
 			return nil

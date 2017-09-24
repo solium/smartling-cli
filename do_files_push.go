@@ -60,7 +60,12 @@ func doFilesPush(
 	files := []string{}
 
 	for _, pattern := range patterns {
-		chunk, err := globFilesLocally(directory, pattern)
+		base, pattern := getDirectoryFromPattern(pattern)
+		chunk, err := globFilesLocally(
+			directory,
+			base,
+			pattern,
+		)
 		if err != nil {
 			return NewError(
 				hierr.Errorf(
