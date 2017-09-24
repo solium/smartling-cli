@@ -5,37 +5,57 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"regexp"
 
 	"github.com/Smartling/api-sdk-go"
 	"github.com/reconquest/hierr-go"
+	"github.com/tcnksm/go-input"
 )
 
 func doInit(config Config, args map[string]interface{}) error {
-	fmt.Printf("Generating %s...\n", config.path)
+	fmt.Printf("Generating %s...\n\n", config.path)
 
 	prompt := func(
 		message string,
 		value interface{},
 		zero bool,
-		input interface{},
+		hidden bool,
+		variable interface{},
 	) {
-		fmt.Print(message)
+		display := regexp.MustCompile(`^(.{1,3}).*$`).ReplaceAllString(
+			fmt.Sprint(value),
+			`$1***`,
+		)
 
 		if !zero {
-			fmt.Printf(" [%s]: ", value)
-		} else {
-			fmt.Printf(": ")
+			message = fmt.Sprintf("%s [default is %q]", message, display)
 		}
 
-		fmt.Scanln(input)
+		read, err := input.DefaultUI().Ask(
+			message,
+			&input.Options{
+				Default:     fmt.Sprint(value),
+				Hide:        hidden,
+				HideDefault: true,
+			},
+		)
+		if err != nil {
+			if input.ErrInterrupted == err {
+				os.Exit(1)
+			}
+		}
+
+		fmt.Sscanln(read, variable)
 	}
 
 	var input Config
 
 	prompt(
-		"Enter Smartling API V2.0 User Identifier:",
+		"Smartling API V2.0 User Identifier",
 		config.UserID,
 		config.UserID == "",
+		false,
 		&input.UserID,
 	)
 
@@ -44,9 +64,10 @@ func doInit(config Config, args map[string]interface{}) error {
 	}
 
 	prompt(
-		"Enter Smartling API V2.0 Token Secret:",
+		"Smartling API V2.0 Token Secret",
 		config.Secret,
 		config.Secret == "",
+		true,
 		&input.Secret,
 	)
 
@@ -55,9 +76,10 @@ func doInit(config Config, args map[string]interface{}) error {
 	}
 
 	prompt(
-		"Enter Account ID (optional)",
+		"Account ID (optional)",
 		config.AccountID,
 		config.AccountID == "",
+		false,
 		&input.AccountID,
 	)
 
@@ -66,9 +88,10 @@ func doInit(config Config, args map[string]interface{}) error {
 	}
 
 	prompt(
-		"Enter Project ID",
+		"Project ID",
 		config.ProjectID,
 		config.ProjectID == "",
+		false,
 		&input.ProjectID,
 	)
 
@@ -84,6 +107,8 @@ func doInit(config Config, args map[string]interface{}) error {
 			"unable to compile config template",
 		)
 	}
+
+	logger.HideFromConfig(config)
 
 	fmt.Println("Testing connection to Smartling API...")
 

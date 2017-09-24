@@ -151,7 +151,7 @@ Options:
 `
 
 var (
-	logger = lorg.NewLog()
+	logger = NewRedactedLog()
 )
 
 const (
@@ -237,10 +237,10 @@ func main() {
 func reportError(err error) {
 	switch err := err.(type) {
 	case ProjectNotFoundError, Error:
-		fmt.Println(err)
+		fmt.Fprintln(logger.GetWriter(), err)
 
 	default:
-		fmt.Println("ERROR:", err)
+		fmt.Fprintf(logger.GetWriter(), "ERROR: %s", err)
 	}
 }
 
@@ -360,6 +360,8 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 			}
 		}
 	}
+
+	logger.HideFromConfig(config)
 
 	switch {
 	case args["files"].(bool), args["projects"].(bool) && !args["list"].(bool):
