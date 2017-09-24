@@ -26,14 +26,30 @@ func NewRedactedLog() *redactedLog {
 	return log
 }
 
-func (log *redactedLog) Hide(value string) {
-	log.writer.values = append(log.writer.values, value)
+func (log *redactedLog) ToggleRedact(enable bool) {
+	log.writer.enabled = enable
+}
+
+func (log *redactedLog) HideRegexp(pattern *regexp.Regexp) {
+	log.writer.patterns = append(log.writer.patterns, pattern)
+}
+
+func (log *redactedLog) HideString(value string) {
+	pattern := regexp.MustCompile(
+		fmt.Sprintf(
+			"(%s)",
+			regexp.QuoteMeta(value),
+		),
+	)
+
+	log.writer.patterns = append(log.writer.patterns, pattern)
 }
 
 func (log *redactedLog) HideFromConfig(config Config) {
-	log.Hide(config.Secret)
-	log.Hide(config.UserID)
-	log.Hide(config.AccountID)
+	log.HideString(config.Secret)
+	log.HideString(config.UserID)
+	log.HideString(config.AccountID)
+	log.HideString(config.ProjectID)
 }
 
 func (log *redactedLog) GetWriter() io.Writer {
@@ -41,20 +57,31 @@ func (log *redactedLog) GetWriter() io.Writer {
 }
 
 type redactedWriter struct {
-	values []string
+	patterns []*regexp.Regexp
+	enabled  bool
 }
 
 func (writer redactedWriter) Write(buffer []byte) (int, error) {
+	if !writer.enabled {
+		return os.Stderr.Write(buffer)
+	}
+
 	output := string(buffer)
 
-	for _, value := range writer.values {
-		output = regexp.MustCompile(
-			fmt.Sprintf(
-				"(%s)%s",
-				regexp.QuoteMeta(value[:3]),
-				regexp.QuoteMeta(value[3:]),
-			),
-		).ReplaceAllString(output, `$1***`)
+	for _, pattern := range writer.patterns {
+		output = pattern.ReplaceAllStringFunc(
+			output,
+			func(value string) string {
+				i := pattern.FindStringSubmatchIndex(value)
+				if len(i) < 4 {
+					return value
+				}
+
+				// NOTE: Cut out first 3 characters of first regexp submatch,
+				// NOTE: which identifies secret.
+				return value[:i[2]+3] + "***" + value[i[3]:]
+			},
+		)
 	}
 
 	return os.Stderr.Write([]byte(output))

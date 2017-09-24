@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 
 	"github.com/Smartling/api-sdk-go"
@@ -193,6 +194,8 @@ func main() {
 		os.Exit(0)
 	}
 
+	logger.ToggleRedact(true)
+
 	switch args["--verbose"].(int) {
 	case 0:
 		// nothing do to
@@ -200,7 +203,11 @@ func main() {
 	case 1:
 		logger.SetLevel(lorg.LevelInfo)
 
+	case 2:
+		logger.SetLevel(lorg.LevelDebug)
+
 	default:
+		logger.ToggleRedact(false)
 		logger.SetLevel(lorg.LevelDebug)
 	}
 
@@ -440,6 +447,20 @@ func createClient(
 	client.HTTP.Transport = &transport
 	client.UserAgent = "smartling-cli/" + version
 
+	setLogger(client, logger, args["--verbose"].(int))
+
+	logger.HideRegexp(
+		regexp.MustCompile(`"(?:access|refresh)Token": "([^"]+)"`),
+	)
+
+	err := client.Authenticate()
+	if err != nil {
+		return nil, NewError(
+			err,
+			`Your credentials are invalid. Double check it and try to run init.`,
+		)
+	}
+
 	return client, nil
 }
 
@@ -448,8 +469,6 @@ func doProjects(config Config, args map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
-
-	setLogger(client, logger, args["--verbose"].(int))
 
 	switch {
 	case args["list"].(bool):
@@ -484,8 +503,6 @@ func doFiles(config Config, args map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
-
-	setLogger(client, logger, args["--verbose"].(int))
 
 	switch {
 	case args["list"].(bool):
