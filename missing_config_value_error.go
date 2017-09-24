@@ -4,6 +4,7 @@ import "fmt"
 
 type MissingConfigValueError struct {
 	ConfigPath string
+	EnvVarName string
 	ValueName  string
 	OptionName string
 	KeyName    string
@@ -11,10 +12,18 @@ type MissingConfigValueError struct {
 
 func (err MissingConfigValueError) Error() string {
 	return NewError(
-		fmt.Errorf("%s is not specified.", err.ValueName),
-		`Either specify --%s command line option or set "%s" `+
-			"option in the configuration file:\n\n%s:\n\t%s",
+		fmt.Errorf(
+			"Cannot find mandatory configuration parameter %q",
+			err.ValueName,
+		),
+
+		"Please, specify either:\n"+
+			"- Environment variable $%s;\n"+
+			"- Command line option --%s=<%s>;\n"+
+			"- Or set %q option in the configuration file:\n\n\t%s\n\t\t%s",
+		err.EnvVarName,
 		err.OptionName,
+		err.KeyName,
 		err.KeyName,
 		err.ConfigPath,
 		fmt.Sprintf(`%s: "PUT_VALUE_HERE"`, err.KeyName),

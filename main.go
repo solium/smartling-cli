@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/Smartling/api-sdk-go"
@@ -112,7 +113,9 @@ Commands:
 Options:
   -h --help               Show this help.
   -c --config <file>      Config file in YAML format.
-                           [default: smartling.yml]
+                           By default CLI will look for file named
+                           "smartling.yml" in current directory and in all
+                           intermediate parents, emulating git behavior.
   -p --project <project>  Project ID to operate on.
                            This option overrides config value "project_id".
   -a --account <account>  Account ID to operate on.
@@ -152,6 +155,8 @@ var (
 )
 
 const (
+	defaultConfigName = "smartling.yml"
+
 	defaultProjectsLocalesFormat = `{{.LocaleID}}\t{{.Description}}\t{{.Enabled}}\n`
 	defaultFilesListFormat       = `{{.FileURI}}\t{{.LastUploaded}}\t{{.FileType}}\n`
 	defaultFileStatusFormat      = `{{name .FileURI}}{{with .Locale}}_{{.}}{{end}}{{ext .FileURI}}`
@@ -188,13 +193,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	config, err := loadConfig(args)
-	if err != nil {
-		fmt.Println(err)
-
-		os.Exit(1)
-	}
-
 	switch args["--verbose"].(int) {
 	case 0:
 		// nothing do to
@@ -208,6 +206,13 @@ func main() {
 
 	logger.SetFormat(lorg.NewFormat("* ${time} ${level:[%s]:right} %s"))
 	logger.SetIndentLines(true)
+
+	config, err := loadConfig(args)
+	if err != nil {
+		fmt.Println(err)
+
+		os.Exit(1)
+	}
 
 	switch {
 	case args["init"].(bool):
@@ -239,8 +244,58 @@ func reportError(err error) {
 	}
 }
 
+func findConfig(name string) (string, error) {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		return "", err
+	}
+
+	var path string
+
+	for {
+		path = filepath.Join(dir, name)
+
+		logger.Debugf("looking for config file in: %q", dir)
+
+		_, err = os.Stat(path)
+		if err != nil {
+			if !os.IsNotExist(err) {
+				return "", hierr.Errorf(err, "unable to stat file %q", path)
+			}
+		} else {
+			logger.Debugf("config file found: %q", path)
+
+			return path, nil
+		}
+
+		if dir == "/" {
+			break
+		}
+
+		dir = filepath.Dir(dir)
+	}
+
+	return "", fmt.Errorf(
+		"no configuration file %q found",
+		name,
+	)
+}
+
 func loadConfig(args map[string]interface{}) (Config, error) {
-	path := args["--config"].(string)
+	var err error
+
+	path, _ := args["--config"].(string)
+	if path == "" {
+		path, err = findConfig(defaultConfigName)
+		if err != nil {
+			return Config{}, NewError(
+				err,
+
+				`Ensure, that config file exists either in the current `+
+					`directory or in any parent directory.`,
+			)
+		}
+	}
 
 	config, err := NewConfig(path)
 	if err != nil {
@@ -282,6 +337,7 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 		if config.UserID == "" {
 			return config, MissingConfigValueError{
 				ConfigPath: config.path,
+				EnvVarName: "SMARTLING_USER_ID",
 				ValueName:  "user ID",
 				OptionName: "user",
 				KeyName:    "user_id",
@@ -291,6 +347,7 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 		if config.Secret == "" {
 			return config, MissingConfigValueError{
 				ConfigPath: config.path,
+				EnvVarName: "SMARTLING_SECRET",
 				ValueName:  "token secret",
 				OptionName: "secret",
 				KeyName:    "secret",
@@ -303,6 +360,7 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 		if config.ProjectID == "" {
 			return config, MissingConfigValueError{
 				ConfigPath: config.path,
+				EnvVarName: "SMARTLING_PROJECT_ID",
 				ValueName:  "project ID",
 				OptionName: "project",
 				KeyName:    "project_id",
@@ -390,6 +448,7 @@ func doProjects(config Config, args map[string]interface{}) error {
 		if config.AccountID == "" {
 			return MissingConfigValueError{
 				ConfigPath: config.path,
+				EnvVarName: "SMARTLING_PROJECT_ID",
 				ValueName:  "account ID",
 				OptionName: "account",
 				KeyName:    "account_id",
