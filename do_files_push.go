@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -102,9 +103,61 @@ func doFilesPush(
 		)
 	}
 
+	base, err := filepath.Abs(config.path)
+	if err != nil {
+		return NewError(
+			hierr.Errorf(
+				err,
+				`unable to resolve absolute path to config`,
+			),
+
+			`It's internal error, please, contact developer for more info`,
+		)
+	}
+
+	base = filepath.Dir(base)
+
 	for _, file := range files {
+		name, err := filepath.Abs(file)
+		if err != nil {
+			return NewError(
+				hierr.Errorf(
+					err,
+					`unable to resolve absolute path to file: %q`,
+					file,
+				),
+
+				`Check, that file exists and you have proper permissions `+
+					`to access it.`,
+			)
+		}
+
+		if !filepath.HasPrefix(name, base) {
+			return NewError(
+				errors.New(
+					`you are trying to push file outside project directory`,
+				),
+
+				`Check file path and path to configuration file and try again.`,
+			)
+		}
+
+		name, err = filepath.Rel(base, name)
+		if err != nil {
+			return NewError(
+				hierr.Errorf(
+					err,
+					`unable to resolve relative path to file: %q`,
+					file,
+				),
+
+				`Check, that file exists and you have proper permissions `+
+					`to access it.`,
+			)
+		}
+
 		if !useURI {
-			uri = file
+			uri = name
 		}
 
 		fileConfig, err := config.GetFileConfig(file)
@@ -207,7 +260,7 @@ func doFilesPush(
 
 		fmt.Printf(
 			"%s (%s) %s [%d strings %d words]\n",
-			branch+file,
+			uri,
 			request.FileType,
 			status,
 			response.StringCount,
