@@ -76,11 +76,11 @@ func (writer redactedWriter) Write(buffer []byte) (int, error) {
 			func(value string) string {
 				i := pattern.FindStringSubmatchIndex(value)
 				if len(i) < 4 {
-					return placeholder
+					return value
 				}
 
 				if len(value) < i[2]+3 {
-					return placeholder
+					return value
 				}
 
 				// NOTE: Cut out first 3 characters of first regexp submatch,

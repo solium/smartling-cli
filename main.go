@@ -301,12 +301,16 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 			filepath.Join(directory, defaultConfigName),
 		)
 		if err != nil {
-			return Config{}, NewError(
-				err,
+			if !args["init"].(bool) {
+				return Config{}, NewError(
+					err,
 
-				`Ensure, that config file exists either in the current `+
-					`directory or in any parent directory.`,
-			)
+					`Ensure, that config file exists either in the current `+
+						`directory or in any parent directory.`,
+				)
+			} else {
+				path = "smartling.yaml"
+			}
 		}
 	}
 
