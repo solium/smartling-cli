@@ -309,7 +309,7 @@ func loadConfig(args map[string]interface{}) (Config, error) {
 						`directory or in any parent directory.`,
 				)
 			} else {
-				path = "smartling.yaml"
+				path = "smartling.yml"
 			}
 		}
 	}
