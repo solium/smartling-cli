@@ -68,22 +68,24 @@ func (writer redactedWriter) Write(buffer []byte) (int, error) {
 
 	output := string(buffer)
 
+	placeholder := "***"
+
 	for _, pattern := range writer.patterns {
 		output = pattern.ReplaceAllStringFunc(
 			output,
 			func(value string) string {
 				i := pattern.FindStringSubmatchIndex(value)
 				if len(i) < 4 {
-					return value
+					return placeholder
 				}
 
 				if len(value) < i[2]+3 {
-					return value
+					return placeholder
 				}
 
 				// NOTE: Cut out first 3 characters of first regexp submatch,
 				// NOTE: which identifies secret.
-				return value[:i[2]+3] + "***" + value[i[3]:]
+				return value[:i[2]+3] + placeholder + value[i[3]:]
 			},
 		)
 	}
