@@ -77,6 +77,10 @@ func (writer redactedWriter) Write(buffer []byte) (int, error) {
 					return value
 				}
 
+				if len(value) < i[2]+3 {
+					return value
+				}
+
 				// NOTE: Cut out first 3 characters of first regexp submatch,
 				// NOTE: which identifies secret.
 				return value[:i[2]+3] + "***" + value[i[3]:]
