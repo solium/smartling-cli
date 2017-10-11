@@ -219,7 +219,7 @@ Available options:
     > contextMatchingInstrumented — to use with Chrome Context Capture;
 ` + authenticationOptionsHelp
 
-const filesPushHelp = `smartling files push — upload files to project.
+const filesPushHelp = `smartling files push <file> [<uri>] [--type <type>] [--branch (@auto|<branch name>)] [--authorize|--locale <locale>] [--directory <work dir>] [--directive <smartling directive>]
 
 Uploads files designated for translation.
 

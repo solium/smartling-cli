@@ -267,7 +267,7 @@ func findConfig(name string) (string, error) {
 		_, err = os.Stat(path)
 		if err != nil {
 			if !os.IsNotExist(err) {
-				return "", hierr.Errorf(err, "unable to stat file %q", path)
+				return "", hierr.Errorf(err, "unable to find config file: %q", path)
 			}
 		} else {
 			logger.Debugf("config file found: %q", path)
@@ -461,7 +461,7 @@ func createClient(
 	if err != nil {
 		return nil, NewError(
 			err,
-			`Your credentials are invalid. Double check it and try to run init.`,
+			`Your credentials are invalid. Double check it and try to run init.\n`,
 		)
 	}
 
