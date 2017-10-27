@@ -16,40 +16,40 @@ import (
 	"github.com/reconquest/hierr-go"
 )
 
-var version = "1.0"
+var version = "1.1"
 
-var usage = `smartling - manage translation files using Smartling.
+var usage = `smartling-cli - manage translation files using Smartling.
 
 Add --help option to command to get detailed help for specific command.
 
 Usage:
-  smartling [options] [-v]... init --help
-  smartling [options] [-v]... init [--dry-run]
-  smartling [options] [-v]... projects list --help
-  smartling [options] [-v]... projects list [--short]
-  smartling [options] [-v]... projects info --help
-  smartling [options] [-v]... projects info
-  smartling [options] [-v]... projects locales --help
-  smartling [options] [-v]... projects locales [--source] [--short] [--format=]
-  smartling [options] [-v]... files list --help
-  smartling [options] [-v]... files list [--format=] [--short] [<uri>]
-  smartling [options] [-v]... files (pull|get) --help
-  smartling [options] [-v]... files (pull|get) [--locale=]... [--directory=] [--source] [--format=]
+  smartling-cli [options] [-v]... init --help
+  smartling-cli [options] [-v]... init [--dry-run]
+  smartling-cli [options] [-v]... projects list --help
+  smartling-cli [options] [-v]... projects list [--short]
+  smartling-cli [options] [-v]... projects info --help
+  smartling-cli [options] [-v]... projects info
+  smartling-cli [options] [-v]... projects locales --help
+  smartling-cli [options] [-v]... projects locales [--source] [--short] [--format=]
+  smartling-cli [options] [-v]... files list --help
+  smartling-cli [options] [-v]... files list [--format=] [--short] [<uri>]
+  smartling-cli [options] [-v]... files (pull|get) --help
+  smartling-cli [options] [-v]... files (pull|get) [--locale=]... [--directory=] [--source] [--format=]
                                                [--progress=] [--retrieve=] [<uri>]
-  smartling [options] [-v]... files push --help
-  smartling [options] [-v]... files push [(--authorize|--locale=...)] [--branch=] [--type=]
+  smartling-cli [options] [-v]... files push --help
+  smartling-cli [options] [-v]... files push [(--authorize|--locale=...)] [--branch=] [--type=]
                                          [--directory=] [--directive=]... [<file>] [<uri>]
-  smartling [options] [-v]... files rename --help
-  smartling [options] [-v]... files rename <old-uri> <new-uri>
-  smartling [options] [-v]... files status --help
-  smartling [options] [-v]... files status [--directory=] [--format=] [<uri>]
-  smartling [options] [-v]... files delete --help
-  smartling [options] [-v]... files delete <uri>
-  smartling [options] [-v]... files import --help
-  smartling [options] [-v]... files import <uri> <file> <locale>
+  smartling-cli [options] [-v]... files rename --help
+  smartling-cli [options] [-v]... files rename <old-uri> <new-uri>
+  smartling-cli [options] [-v]... files status --help
+  smartling-cli [options] [-v]... files status [--directory=] [--format=] [<uri>]
+  smartling-cli [options] [-v]... files delete --help
+  smartling-cli [options] [-v]... files delete <uri>
+  smartling-cli [options] [-v]... files import --help
+  smartling-cli [options] [-v]... files import <uri> <file> <locale>
                                            [(--published|--post-translation)]
                                            [--type=] [--overwrite]
-  smartling --help
+  smartling-cli --help
 
 Commands:
   init                    Prepares project to work with Smartling,

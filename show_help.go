@@ -35,7 +35,7 @@ const globPatternHelp = `argument support globbing with following patterns:
   > [!xyz]  — matches not 'x', 'y' or 'z' charachers;
   > {a,b,c} — matches alternatives a, b or c;`
 
-const initHelp = `smartling init — create config file interactively.
+const initHelp = `smartling-cli init — create config file interactively.
 
 Walk down common config file parameters and fill them through dialog.
 
@@ -46,17 +46,17 @@ is lost.
 Options like --user, --secret, --account and --project can be used to specify
 config values prior dialog:
 
-  smartling init --user=your_user_id
+  smartling-cli init --user=your_user_id
 
 Also, --dry-run option can be used to just look at resulting config without
 overwritting anything:
 
-  smartling init --dry-run
+  smartling-cli init --dry-run
 
 By default, smartling.yml file in the local directory will be used as target
 config file, but it can be overriden by using --config option:
 
-  smartling init --config=/path/to/project/smartling.yml
+  smartling-cli init --config=/path/to/project/smartling.yml
 
 
 Available options:
@@ -72,7 +72,7 @@ Default config values can be passed via following options:` +
     Specify default project.
 `
 
-const projectsListHelp = `smartling projects list — list projects from account.
+const projectsListHelp = `smartling-cli projects list — list projects from account.
 
 Command will list projects from specified account in tabular format with
 following information:
@@ -92,7 +92,7 @@ Available options:
     List only project IDs.
 ` + authenticationOptionsHelp
 
-const projectsInfoHelp = `smartling projects info — show detailed project info.
+const projectsInfoHelp = `smartling-cli projects info — show detailed project info.
 
 Displays detailed information for specific project.
 
@@ -101,7 +101,7 @@ Project should be specified either in config or via --project option.
 
 Available options:` + authenticationOptionsHelp
 
-const projectsLocalesHelp = `smartling projects locales — list target locales.
+const projectsLocalesHelp = `smartling-cli projects locales — list target locales.
 
 Lists target locales from specified project.
 
@@ -125,7 +125,7 @@ Available options:
     Use specific output format instead of default.
 ` + authenticationOptionsHelp
 
-const filesListHelp = `smartling files list — list files from project.
+const filesListHelp = `smartling-cli files list — list files from project.
 
 Lists all files from project or only files which matches specified uri.
 
@@ -160,7 +160,7 @@ Available options:
     Override default listing format.
 ` + authenticationOptionsHelp
 
-const filesPullHelp = `smartling files pull — downloads translated files from project.
+const filesPullHelp = `smartling-cli files pull — downloads translated files from project.
 
 Downloads files from specified project into local directory.
 
@@ -171,7 +171,7 @@ specific locales only.
 If special value of "-" is specified as <uri>, then program will expect
 to read files list from stdin:
 
-  cat files.txt | smartling files pull -
+  cat files.txt | smartling-cli files pull -
 
 <uri> ` + globPatternHelp + `
 
@@ -219,7 +219,7 @@ Available options:
     > contextMatchingInstrumented — to use with Chrome Context Capture;
 ` + authenticationOptionsHelp
 
-const filesPushHelp = `smartling files push <file> [<uri>] [--type <type>] [--branch (@auto|<branch name>)] [--authorize|--locale <locale>] [--directory <work dir>] [--directive <smartling directive>]
+const filesPushHelp = `smartling-cli files push <file> [<uri>] [--type <type>] [--branch (@auto|<branch name>)] [--authorize|--locale <locale>] [--directory <work dir>] [--directive <smartling directive>]
 
 Uploads files designated for translation.
 
@@ -263,7 +263,7 @@ Available options:
     Override automatically detected file type.
 ` + authenticationOptionsHelp
 
-const filesStatusHelp = `smartling files status — show files status from project.
+const filesStatusHelp = `smartling-cli files status — show files status from project.
 
 Lists all files from project along with their translation progress into
 different locales.
@@ -305,7 +305,7 @@ Available options:
     Specify format for listing file names.
 ` + authenticationOptionsHelp
 
-const filesDeleteHelp = `smartling files delete — removes files from project.
+const filesDeleteHelp = `smartling-cli files delete — removes files from project.
 
 Removes files from project according to specified pattern.
 
@@ -314,14 +314,14 @@ Removes files from project according to specified pattern.
 If special value of "-" is specified as <uri>, then program will expect
 to read files list from stdin:
 
-  cat files.txt | smartling files delete -
+  cat files.txt | smartling-cli files delete -
 
 Available options:
   -p --project <project>
     Specify project to use.
 ` + authenticationOptionsHelp
 
-const filesRenameHelp = `smartling files rename — rename specified file.
+const filesRenameHelp = `smartling-cli files rename — rename specified file.
 
 Renames specified file URI into new file URI.
 
@@ -330,7 +330,7 @@ Available options:
     Specify project to use.
 ` + authenticationOptionsHelp
 
-const importHelp = `smartling import — import file translations.
+const importHelp = `smartling-cli import — import file translations.
 
 Import pre-existent file translations into Smartling. Note, that
 original file should be pushed prior file translations are imported.
