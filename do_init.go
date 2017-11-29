@@ -67,7 +67,7 @@ func doInit(config Config, args map[string]interface{}) error {
 		"Smartling API V2.0 Token Secret",
 		config.Secret,
 		config.Secret == "",
-		true,
+		false,
 		&input.Secret,
 	)
 
