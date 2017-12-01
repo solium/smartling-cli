@@ -44,7 +44,7 @@ func compileFormat(definition string) (*Format, error) {
 			return filepath.Ext(path)
 		},
 
-		"replace": func(input, from, to string) string {
+		"replace": func(from, to, input string) string {
 			return strings.Replace(input, from, to, -1)
 		},
 	}

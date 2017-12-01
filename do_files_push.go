@@ -157,7 +157,28 @@ func doFilesPush(
 		}
 
 		if !useURI {
-			uri = name
+			uriFromName, err := executeFileURIFormat(
+				config,
+				name,
+				"",
+				usePushFormat,
+				map[string]interface{}{
+					"FileURI": name,
+				},
+			)
+
+			if err != nil {
+				return NewError(
+					hierr.Errorf(
+						err,
+						`unable to retrieve file uri`,
+					),
+
+					``,
+				)
+			}
+
+			uri = uriFromName
 		}
 
 		fileConfig, err := config.GetFileConfig(file)

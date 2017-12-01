@@ -10,6 +10,12 @@ var (
 	}
 )
 
+var (
+	usePushFormat = func(config FileConfig) string {
+		return config.Push.Format
+	}
+)
+
 func executeFileFormat(
 	config Config,
 	file smartling.File,
@@ -17,7 +23,17 @@ func executeFileFormat(
 	getter func(config FileConfig) string,
 	data interface{},
 ) (string, error) {
-	local, err := config.GetFileConfig(file.FileURI)
+	return executeFileURIFormat(config, file.FileURI, fallback, getter, data)
+}
+
+func executeFileURIFormat(
+	config Config,
+	fileURI string,
+	fallback string,
+	getter func(config FileConfig) string,
+	data interface{},
+) (string, error) {
+	local, err := config.GetFileConfig(fileURI)
 	if err != nil {
 		return "", err
 	}
@@ -40,3 +56,4 @@ func executeFileFormat(
 
 	return result, nil
 }
+

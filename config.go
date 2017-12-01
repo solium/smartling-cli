@@ -16,8 +16,9 @@ type FileConfig struct {
 	} `yaml:"pull,omitempty"`
 
 	Push struct {
-		Type       string            `yaml:"type,omitempty"`
-		Directives map[string]string `yaml:"directives,omitempty,flow"`
+		Type          string `yaml:"type,omitempty"`
+		Format        string `yaml:"format,omitempty"`
+		Directives    map[string]string `yaml:"directives,omitempty,flow"`
 	} `yaml:"push,omitempty"`
 }
 
