@@ -43,6 +43,10 @@ func compileFormat(definition string) (*Format, error) {
 		"ext": func(path string) string {
 			return filepath.Ext(path)
 		},
+
+		"replace": func(input, from, to string) string {
+			return strings.Replace(input, from, to, -1)
+		},
 	}
 
 	var (
